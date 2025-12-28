@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MedAI Layout</title>
+
+<!-- Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root{
+  --bg:#f5f8fb;
+  --card:#fff;
+  --border:#e6eef7;
+  --muted:#6b7280;
+  --accent:#2563eb;
+  --radius:12px;
+  --soft-shadow:0 6px 18px rgba(18,38,63,0.04);
+}
+
+/* reset */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+  background:var(--bg);color:#0f172a;
+}
+
+/* LAYOUT */
+.app{display:flex;min-height:100vh;width:100%}
+
+/* SIDEBAR */
+.sidebar{
+  width:260px;background:linear-gradient(180deg,#fbfdff,#f7fbff);
+  border-right:1px solid var(--border);
+  padding:22px;display:flex;flex-direction:column;gap:20px;
+  box-shadow:2px 0 12px rgba(20,36,61,0.02);
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{
+  width:46px;height:46;border-radius:10px;background:#eef6ff;color:var(--accent);
+  display:flex;align-items:center;justify-content:center;font-size:18px
+}
+.nav{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.nav-item{
+  display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;
+  font-weight:600;color:#0f172a;cursor:pointer;text-decoration:none;
+}
+.nav-item i{width:18px;text-align:center;color:#475569}
+.nav-item.active{background:#eef6ff;color:var(--accent)}
+.nav-item.active i{color:var(--accent)}
+
+.sidebar-bottom{margin-top:auto}
+.logout{background:#fff;border:1px solid var(--border);color:var(--accent);
+  padding:8px;border-radius:10px;cursor:pointer;font-weight:700;width:100%}
+
+/* MAIN */
+.main{
+  flex:1;padding:28px 36px;
+  overflow-y:auto;display:flex;flex-direction:column;
+}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.pill{padding:7px 12px;background:#f8fafc;border-radius:50px;border:1px solid var(--border);font-size:13px}
+.pill.success{background:#ecfdf5;border:1px solid rgba(16,185,129,0.12);color:#10b981}
+.circle-btn{
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid var(--border);background:white;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+
+/* CONTENT AREA */
+.content-wrapper{
+  margin-top:16px;
+  padding-bottom:40px;
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .sidebar{display:none}
+  .main{padding:16px}
+}
+</style>
+
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-shield-heart"></i></div>
+      <div>
+        <div style="font-weight:800">MedAI</div>
+        <div style="font-size:12px;color:var(--muted)">Secure</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="doctor.html" class="nav-item" id="nav-dashboard"><i class="fa-solid fa-house"></i>Dashboard</a>
+      <a href="upload.html" class="nav-item" id="nav-upload"><i class="fa-solid fa-file-arrow-up"></i>Upload Record</a>
+      <a href="ai_chatbot.html" class="nav-item" id="nav-chat"><i class="fa-solid fa-robot"></i>AI Chatbot</a>
+      <a href="patient_cases.html" class="nav-item" id="nav-cases"><i class="fa-solid fa-folder-open"></i>Patient Cases</a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <button class="logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="pill">HIPAA-Compliant System</div>
+      <div class="pill">End-to-End Encrypted</div>
+
+      <div style="margin-left:auto"></div>
+
+      <div class="pill success"><i class="fa-solid fa-circle-check" style="margin-right:6px"></i>Secure</div>
+    </header>
+
+    <!-- CENTER CONTENT (Each page injects content here) -->
+    <section class="content-wrapper">
+      {{ content }}
+    </section>
+
+  </main>
+
+</div>
+
+<script>
+// Highlight active sidebar item
+const path = window.location.pathname;
+
+document.querySelectorAll(".nav-item").forEach(item => {
+  if(path.endsWith(item.getAttribute("href"))){
+    item.classList.add("active");
+  }
+});
+</script>
+
+</body>
+</html>

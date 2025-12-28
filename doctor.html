@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MedAI — Doctor Dashboard</title>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root{
+  --bg: #f5f8fb;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --border: #e6eef7;
+  --accent: #2563eb;
+  --accent-600: #1e40af;
+  --success: #10b981;
+  --danger: #ef4444;
+  --radius: 12px;
+  --shadow: 0 10px 24px rgba(18,38,63,0.06);
+  --soft-shadow: 0 6px 18px rgba(18,38,63,0.04);
+}
+
+
+*{box-sizing: border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+  background:var(--bg);
+  color:#0f172a;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+
+.app { display:flex; min-height:100vh; width:100%; }
+
+
+.sidebar{
+  width:260px;background:linear-gradient(180deg,#fbfdff,#f7fbff);border-right:1px solid var(--border);
+  padding:22px;display:flex;flex-direction:column;gap:20px;box-shadow:2px 0 12px rgba(20,36,61,0.02);
+}
+.brand{display:flex;gap:12px;align-items:center}
+.brand-icon{width:46px;height:46;border-radius:10px;background:#eef6ff;color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px}
+.brand-title{font-weight:700;line-height:1}
+.brand-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+
+.nav{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.nav-item{
+  display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;color:#0f172a;text-decoration:none;cursor:pointer;font-weight:600;
+}
+.nav-item i{width:18px;text-align:center;color:#475569}
+.nav-item span{font-size:14px}
+
+.nav-item.active{
+  background:#eef6ff !important;
+  color:var(--accent) !important;
+}
+.nav-item.active i{
+  color:var(--accent) !important;
+}
+
+
+.sidebar-bottom{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+.who{font-weight:700}
+.who .muted{font-weight:500;color:var(--muted);font-size:12px}
+.logout{background:#fff;border:1px solid #e6eef7;color:var(--accent);padding:8px;border-radius:8px;cursor:pointer;text-align:left;font-weight:700}
+
+
+.main{
+  flex:1;
+  padding:28px 36px;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+}
+
+
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.pill{display:inline-block;padding:7px 12px;border-radius:999px;font-size:13px;background:#f8fafc;color:#334155;border:1px solid #eef2ff}
+.pill.success{background:#ecfdf5;color:var(--success);border:1px solid rgba(16,185,129,0.12)}
+.left-pill{display:flex;gap:10px;align-items:center}
+.center-close{display:flex;align-items:center;justify-content:center;margin:0 auto}
+.circle-btn{width:36px;height:36px;border-radius:50%;border:1px solid #e6eef7;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+
+.page-head{margin-top:6px}
+.page-head h1{margin:6px 0 4px 0;font-size:28px}
+.subtitle{margin:0;color:var(--muted);font-size:14px}
+
+.cards{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:18px;
+  margin-top:20px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:18px;
+  border:1px solid var(--border);
+  box-shadow:var(--soft-shadow);
+}
+
+
+.stat{display:flex;justify-content:space-between;align-items:flex-start}
+.stat-left{display:flex;gap:14px;align-items:center}
+.stat-icon{width:48px;height:48;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:18px;color:#334155}
+.stat-icon.blue{background:#eef6ff;color:var(--accent)}
+.stat-icon.orange{background:#fff7ed;color:#f97316}
+.stat-icon.green{background:#ecfdf5;color:var(--success)}
+.stat-icon.purple{background:#f5f3ff;color:#7c3aed}
+.stat-title{font-size:14px;color:var(--muted)}
+.stat-value{font-size:24px;font-weight:800;margin-top:6px}
+.stat-meta{font-size:13px;color:var(--muted);margin-top:12px}
+
+
+.demo{display:flex;align-items:center;justify-content:space-between;margin-top:22px;padding:14px;border-radius:var(--radius)}
+.demo-left{display:flex;gap:14px;align-items:center}
+.demo-left i{font-size:18px;color:#475569}
+.demo-title{font-weight:700}
+.switch{display:inline-block}
+.switch input{display:none}
+.slider{width:46px;height:26px;background:#eef2f6;border-radius:999px;position:relative;display:inline-block}
+.slider::after{content:"";width:20px;height:20px;border-radius:50%;background:white;position:absolute;left:3px;top:3px;transition:all .18s ease}
+.switch input:checked + .slider{background:#d1fae5}
+.switch input:checked + .slider::after{transform:translateX(20px)}
+
+
+.security{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px}
+.sec{padding:14px;border-radius:12px;background:#f7fffb;border:1px solid #e6f8ef;display:flex;flex-direction:column;gap:8px}
+.sec-title{font-size:13px;color:var(--muted)}
+.sec-strong{font-weight:700;color:#064e3b}
+.tick{color:var(--success);margin-left:8px}
+
+.btn-outline {
+  text-decoration: none;      /* underline kill */
+  padding: 8px 16px;
+  border: 1.5px solid #3b82f6;
+  border-radius: 8px;
+  color: #3b82f6;
+  font-weight: 500;
+  background-color: transparent;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.action{display:flex;align-items:center;justify-content:space-between;padding:14px;border-radius:12px}
+.action-left{display:flex;gap:12px;align-items:center;min-width:0}
+.action-icon{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}
+.action-icon.blue{background:var(--accent)}
+.action-icon.green{background:#059669}
+.action-icon.purple{background:#7c3aed}
+.action-title{font-weight:700}
+.action .muted{font-size:13px;color:var(--muted);margin-top:4px}
+.action-right button{border-radius:10px;padding:8px 12px;font-weight:700;border:none;cursor:pointer}
+.btn-solid{background:#059669;color:white}
+.btn-outline{background:transparent;border:1px solid #eef6ff;color:#0f172a}
+
+
+.activity{margin-top:20px;padding:14px;border-radius:12px}
+.activity-head{display:flex;justify-content:space-between;align-items:center}
+.activity-title{font-weight:700}
+.activity-list{list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:10px}
+.activity-list li{display:flex;gap:12px;align-items:center;padding:12px;border-radius:10px;background:#ffffff;border:1px solid #f1f7fb}
+.activity-list li .muted{color:var(--muted);margin-left:8px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.dot.green{background:var(--success)}
+.dot.blue{background:var(--accent)}
+.dot.gray{background:#94a3b8}
+
+
+.footer{margin-top:22px;padding:14px;border-radius:10px;text-align:center;background:linear-gradient(180deg,#0f172a,#0b1220);color:#fff;font-size:13px}
+
+
+@media (max-width:1200px){
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .security{grid-template-columns:repeat(2,1fr)}
+  .quick-actions{grid-template-columns:1fr}
+  .sidebar{display:none}
+}
+@media (max-width:700px){
+  .cards{grid-template-columns:1fr}
+  .security{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar" aria-label="Sidebar">
+    <div class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-shield-heart"></i></div>
+      <div>
+        <div class="brand-title">MedAI</div>
+        <div class="brand-sub">Secure</div>
+      </div>
+    </div>
+
+<nav class="nav" aria-label="Main navigation">
+  <a href="doctor.html" class="nav-item">
+    <i class="fa-solid fa-house"></i>
+    <span>Dashboard</span>
+  </a>
+
+  <a href="upload.html" class="nav-item">
+    <i class="fa-solid fa-file-arrow-up"></i>
+    <span>Upload Record</span>
+  </a>
+
+  <a href="ai-chatbot.html" class="nav-item">
+    <i class="fa-solid fa-robot"></i>
+    <span>AI Chatbot</span>
+  </a>
+
+  <a href="patient-case.html" class="nav-item">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Patient Cases</span>
+  </a>
+</nav>
+
+    <div class="sidebar-bottom">
+      <div class="who">
+        Doctor <div class="muted" style="font-weight:600">Logged in</div>
+      </div>
+
+      <button class="logout"   onclick="onLogout()">
+        <i class="fa-solid fa-right-from-bracket"></i>&nbsp; Logout
+      </button>
+    </div>
+</aside>
+
+
+  <!-- MAIN -->
+  <main class="main">
+    <header class="topbar" role="banner">
+      <div class="left-pill">
+        <span class="pill">HIPAA-Compliant System</span>
+        <span class="pill">End-to-End Encrypted</span>
+      </div>
+
+      <div class="right-pill">
+        <span class="pill success"><i class="fa-solid fa-circle-check" style="margin-right:6px"></i> System Status: Secure</span>
+      </div>
+    </header>
+
+    <section class="page-head">
+      <h1>Dashboard</h1>
+      <p class="subtitle">Welcome back, doctor. Here's your system overview.</p>
+    </section>
+
+    
+    <section class="cards" aria-label="Key metrics">
+      <article class="stat card">
+        <div class="stat-left">
+          <div class="stat-icon blue"><i class="fa-solid fa-database"></i></div>
+          <div>
+            <div class="stat-title">Cleaned Records</div>
+            <div class="stat-value" id="stat-records"></div>
+          </div>
+        </div>
+        <div class="stat-meta"></div>
+      </article>
+
+      <article class="stat card">
+        <div class="stat-left">
+          <div class="stat-icon orange"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div>
+            <div class="stat-title">Pending PHI Detection</div>
+            <div class="stat-value" id="stat-phi"></div>
+          </div>
+        </div>
+        <div class="stat-meta" style="color:var(--danger)"></div>
+      </article>
+
+      <article class="stat card">
+        <div class="stat-left">
+          <div class="stat-icon green"><i class="fa-solid fa-lock"></i></div>
+          <div>
+            <div class="stat-title">Encrypted Vectors</div>
+            <div class="stat-value" id="stat-vectors"></div>
+          </div>
+        </div>
+        <div class="stat-meta"></div>
+      </article>
+
+      <article class="stat card">
+        <div class="stat-left">
+          <div class="stat-icon purple"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <div class="stat-title">Active Sessions</div>
+            <div class="stat-value" id="stat-sessions"></div>
+          </div>
+        </div>
+        <div class="stat-meta"></div>
+      </article>
+    </section>
+
+    
+
+    <!-- Security tiles -->
+    <section class="security" aria-label="security status">
+      <div class="sec card">
+        <div class="sec-title">Encryption Standard</div>
+        <div class="sec-strong">AES-256-GCM <span class="tick">✓</span></div>
+      </div>
+      <div class="sec card">
+        <div class="sec-title">Vector Index Status</div>
+        <div class="sec-strong">Encrypted <span class="tick">✓</span></div>
+      </div>
+      <div class="sec card">
+        <div class="sec-title">PHI Masking Engine</div>
+        <div class="sec-strong">Active <span class="tick">✓</span></div>
+      </div>
+      <div class="sec card">
+        <div class="sec-title">RBAC Access Control</div>
+        <div class="sec-strong">Enabled <span class="tick">✓</span></div>
+      </div>
+      <div class="sec card">
+        <div class="sec-title">Zero-Knowledge Mode</div>
+        <div class="sec-strong">ON <span class="tick">✓</span></div>
+      </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions" aria-label="quick actions">
+      <div class="action card">
+        <div class="action-left">
+          <div class="action-icon blue"><i class="fa-solid fa-comment-medical"></i></div>
+          <div>
+            <div class="action-title">Ask Medical Question</div>
+            <div class="muted">Query encrypted patient database with AI</div>
+          </div>
+        </div>
+        <div class="action-right">
+  <a href="ai-chatbot.html"
+     class="btn-outline"
+     onclick="showToast('Open cases (demo)')">
+     Open
+  </a>
+</div>
+
+      </div>
+
+      <div class="action card">
+        <div class="action-left">
+          <div class="action-icon green"><i class="fa-solid fa-upload"></i></div>
+          <div>
+            <div class="action-title">Upload Patient Record</div>
+            <div class="muted">Automatic PHI detection & encryption</div>
+          </div>
+        </div>
+        <div class="action-right">
+  <a href="upload.html"
+     class="btn-outline"
+     onclick="showToast('Open cases (demo)')">
+     Open
+  </a>
+</div>
+
+      </div>
+
+      <div class="action card">
+        <div class="action-left">
+          <div class="action-icon purple"><i class="fa-solid fa-folder-open"></i></div>
+          <div>
+            <div class="action-title">View Patient Cases</div>
+            <div class="muted">Browse encrypted case histories</div>
+          </div>
+        </div>
+        <div class="action-right">
+  <a href="patient-case.html"
+     class="btn-outline"
+     onclick="showToast('Open cases (demo)')">
+     Open
+  </a>
+</div>
+
+      </div>
+    </section>
+
+    <!-- Recent activity -->
+    <section class="activity card" aria-label="recent activity">
+      <div class="activity-head">
+        <div>
+          <div class="activity-title">Recent Activity</div>
+          <div class="muted">Latest system events and user actions</div>
+        </div>
+      </div>
+
+      <ul class="activity-list" id="activityList">
+        <li><span class="dot green"></span> Patient record uploaded <span class="muted"></span></li>
+        <li><span class="dot green"></span> PHI detection completed <span class="muted"></span></li>
+        <li><span class="dot blue"></span> Vector encryption initiated <span class="muted"></span></li>
+        <li><span class="dot gray"></span> Audit log accessed <span class="muted"></span></li>
+      </ul>
+    </section>
+
+    <footer class="footer">
+      All patient data encrypted using AES-256-GCM and processed in-memory only • HIPAA & SOC 2 Compliant
+    </footer>
+  </main>
+</div>
+
+<script>
+/* ================== INIT ================== */
+function authHeaders() {
+  const token = localStorage.getItem("access_token");
+
+  if (!token) {
+    console.error("No access token found");
+    return {};
+  }
+
+  return {
+    "Authorization": "Bearer " + token,
+    "Content-Type": "application/json"
+  };
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* Sidebar auto-highlight */
+  const current = window.location.pathname.split("/").pop();
+  document.querySelectorAll(".nav-item").forEach(item => {
+    item.classList.toggle("active", item.getAttribute("href") === current);
+  });
+
+  /* Demo toggle */
+  const demoToggle = document.getElementById('demoToggle');
+  if (demoToggle) {
+    demoToggle.addEventListener('change', (e) => {
+      e.target.nextElementSibling.setAttribute(
+        'aria-checked',
+        e.target.checked ? 'true' : 'false'
+      );
+      showToast(
+        e.target.checked
+          ? 'Demo mode enabled — presentation view'
+          : 'Demo mode disabled'
+      );
+    });
+  }
+
+  /* Load real backend data */
+  loadDashboardStats();
+  loadRecentActivity();
+});
+
+/* ================== DASHBOARD STATS ================== */
+async function loadDashboardStats() {
+  try {
+    const res = await fetch("http://localhost:8000/dashboard/stats", {
+  headers: authHeaders()
+});
+
+    const data = await res.json();
+
+    const cleaned = data.cleaned_records || 0;
+    const vectors = data.encrypted_vectors || 0;
+    const sessions = localStorage.getItem("access_token") ? 1 : 0;
+
+    const total = data.total_records || cleaned;
+
+    document.getElementById('stat-records').innerText =
+      numberWithCommas(cleaned);
+
+    document.getElementById('stat-vectors').innerText =
+      numberWithCommas(vectors);
+
+    document.getElementById('stat-sessions').innerText =
+      sessions;
+
+    /* Pending PHI = total - cleaned */
+    document.getElementById('stat-phi').innerText =
+    data.pending_phi || 0;
+
+
+  } catch (err) {
+    console.error("Dashboard stats error:", err);
+    showToast("Failed to load dashboard stats");
+  }
+}
+
+/* ================== RECENT ACTIVITY ================== */
+async function loadRecentActivity() {
+  try {
+    const res = await fetch("http://localhost:8000/dashboard/activity", {
+  headers: authHeaders()
+});
+
+    const activities = await res.json();
+
+    const list = document.getElementById('activityList');
+    list.innerHTML = '';
+
+    activities.forEach(act => {
+      const li = document.createElement('li');
+
+      const dot = document.createElement('span');
+      dot.className = 'dot ' + (
+        act.event.includes("PHI") ? 'green' :
+        act.event.includes("VECTOR") ? 'blue' :
+        'gray'
+      );
+
+      const timeAgo = new Date(act.timestamp).toLocaleString("en-IN", {
+  timeZone: "Asia/Kolkata",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: true
+});
+
+
+
+      li.appendChild(dot);
+      li.innerHTML += `
+        ${act.event.replaceAll("_", " ")}
+        <span class="muted">• ${act.actor} • ${timeAgo}</span>
+      `;
+
+      list.appendChild(li);
+    });
+
+  } catch (err) {
+    console.error("Activity load error:", err);
+    showToast("Failed to load recent activity");
+  }
+}
+
+/* ================== UTILITIES ================== */
+function showToast(msg){
+  const t = document.createElement('div');
+  t.textContent = msg;
+  Object.assign(t.style, {
+    position: 'fixed',
+    right: '20px',
+    bottom: '20px',
+    background:'#0b1220',
+    color:'#fff',
+    padding:'10px 14px',
+    borderRadius:'8px',
+    zIndex:9999,
+    boxShadow:'0 8px 24px rgba(2,6,23,0.4)'
+  });
+  document.body.appendChild(t);
+  setTimeout(()=> t.remove(), 2200);
+}
+
+function numberWithCommas(x){
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function onLogout(){
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>

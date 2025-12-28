@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MedAI — Upload Patient Record</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{
+  --bg: #f5f8fb;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --border: #e6eef7;
+  --accent: #2563eb;
+  --success: #10b981;
+  --danger: #ef4444;
+  --radius:12px;
+  --soft-shadow: 0 6px 18px rgba(18,38,63,0.04);
+}
+/* Reset + Dashboard CSS (same as doctor.html) */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+  background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialiased;
+}
+.app{display:flex;min-height:100vh;}
+.sidebar{
+  width:260px;background:linear-gradient(180deg,#fbfdff,#f7fbff);border-right:1px solid var(--border);
+  padding:22px;display:flex;flex-direction:column;gap:20px;box-shadow:2px 0 12px rgba(20,36,61,0.02);
+}
+.brand{display:flex;gap:12px;align-items:center}
+.brand-icon{width:46px;height:46;border-radius:10px;background:#eef6ff;color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px}
+.brand-title{font-weight:700;line-height:1}
+.brand-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.nav{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;color:#0f172a;cursor:pointer;font-weight:600}
+.nav-item i{width:18px;text-align:center;color:#475569}
+.nav-item.active{background:#eef6ff;color:var(--accent)}
+.sidebar-bottom{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+.nav-item {
+  text-decoration: none !important;
+}
+
+.nav-item span {
+  text-decoration: none !important;
+}
+
+.nav-item i {
+  text-decoration: none !important;
+}
+
+.who{font-weight:700}
+.logout{background:#fff;border:1px solid #e6eef7;color:var(--accent);padding:8px;border-radius:8px;cursor:pointer;font-weight:700;text-align:left}
+.main{
+  flex:1;
+  padding:28px 36px;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+}
+
+
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.pill{display:inline-block;padding:7px 12px;border-radius:999px;font-size:13px;background:#f8fafc;color:#334155;border:1px solid #eef2ff}
+.pill.success{background:#ecfdf5;color:var(--success);border:1px solid rgba(16,185,129,0.12)}
+.left-pill{display:flex;gap:10px;align-items:center}
+.center-close{display:flex;align-items:center;justify-content:center;margin:0 auto}
+.circle-btn{width:36px;height:36px;border-radius:50%;border:1px solid #e6eef7;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+
+.page-head{margin-top:6px}
+.page-head h1{margin:6px 0 4px 0;font-size:28px}
+.subtitle{margin:0;color:var(--muted);font-size:14px}
+/* Upload page styles (kept exactly) */
+.step-row{display:flex;gap:16px;margin-top:18px}
+.step-card{flex:1;background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--border);box-shadow:var(--soft-shadow);display:flex;flex-direction:column;gap:8px;min-height:96px}
+.step-top{display:flex;align-items:center;gap:12px}
+.step-badge{font-size:13px;padding:6px 8px;border-radius:999px;background:#f3f7fb;color:#334155;border:1px solid #eef6ff}
+.step-title{font-weight:700}
+.step-sub{font-size:13px;color:var(--muted)}
+.step-status{margin-top:auto}
+.upload-box{margin-top:18px;background:linear-gradient(180deg,#fff,#fff);border-radius:14px;padding:36px;border:1px solid var(--border);min-height:220px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;box-shadow:var(--soft-shadow)}
+.upload-cta{background:#0b1220;color:#fff;padding:10px 18px;border-radius:10px;border:none;cursor:pointer;font-weight:700;box-shadow:0 8px 24px rgba(2,6,23,0.12)}
+.upload-helper{color:var(--muted);font-size:14px}
+.phi-card{margin-top:18px;background:#fff;border-radius:14px;padding:18px;border:1px solid var(--border);box-shadow:var(--soft-shadow)}
+.phi-preview{margin-top:12px;background:#fff5f5;border-radius:10px;padding:20px;border:1px solid #ffd6d6;color:#7b1a1a;position:relative}
+.phi-badge{position:absolute;top:18px;right:18px;background:#ef4444;color:#fff;padding:6px 10px;border-radius:999px;font-weight:700;font-size:13px;box-shadow:0 6px 16px rgba(239,68,68,0.12)}
+.phi-line{font-family:monospace;white-space:pre-wrap;color:#6b1b1b;line-height:1.6}
+.phi-highlight{background:#ffdede;padding:2px 6px;border-radius:6px;color:#7b1a1a;font-weight:700}
+.actions-row{display:flex;gap:12px;margin-top:16px;align-items:center}
+.btn-solid{background:#0b1220;color:#fff;padding:12px 18px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+.btn-outline{background:transparent;border:1px solid #eef6ff;padding:10px 14px;border-radius:10px;cursor:pointer}
+.detection-panel{margin-top:18px;background:linear-gradient(180deg,#fff,#fff);border-radius:14px;padding:18px;border:1px solid var(--border);box-shadow:var(--soft-shadow);display:flex;gap:18px;align-items:flex-start}
+.compare{margin-top:18px;background:var(--card);border-radius:14px;padding:18px;border:1px solid var(--border);box-shadow:var(--soft-shadow)}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.compare-box{height:280px;overflow:auto;border-radius:10px;padding:14px;border:1px solid #f3f3f3}
+.before{background:#fff5f5;border:1px solid #ffd6d6;color:#7b1a1a}
+.after{background:#f3fff6;border:1px solid #d8f7e6;color:#064e3b}
+.success-banner{margin-top:18px;background:#ecfdf5;border-radius:12px;padding:18px;border:1px solid rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.success-left{display:flex;gap:12px;align-items:center}
+.success-icon{width:56px;height:56;border-radius:10px;background:#10b981;color:#fff;display:flex;align-items:center;justify-content:center}
+.small-muted{color:var(--muted);font-size:13px}
+.kv{display:flex;align-items:center;gap:8px}
+.small-pill{padding:6px 8px;border-radius:999px;background:#f3f3f3;font-weight:700;color:#1f2937;font-size:12px}
+@media (max-width:1100px){
+  .step-row{flex-direction:column}
+  .compare-grid{grid-template-columns:1fr}
+  .detection-panel{flex-direction:column}
+}
+@media (max-width:700px){
+  .sidebar{display:none}
+  .main{padding:16px}
+
+}
+.btn-outline {
+  text-decoration: none;      /* underline kill */
+  padding: 8px 16px;
+  border: 1.5px solid #eceff3;
+  border-radius: 8px;
+  color: #000000;
+  font-weight: 500;
+  background-color: transparent;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+</style>
+</head>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const current = window.location.pathname.split("/").pop();
+  document.querySelectorAll(".nav-item").forEach(item => {
+    const href = item.getAttribute("href");
+    if (href === current) {
+      item.classList.add("active");
+    } else {
+      item.classList.remove("active");
+    }
+  });
+});
+
+</script>
+
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" aria-label="Sidebar">
+    <div class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-shield-heart"></i></div>
+      <div>
+        <div class="brand-title">MedAI</div>
+        <div class="brand-sub">Secure</div>
+      </div>
+    </div>
+    <nav class="nav" aria-label="Main navigation">
+  <a href="doctor.html" class="nav-item">
+    <i class="fa-solid fa-house"></i>
+    <span>Dashboard</span>
+  </a>
+
+  <a href="upload.html" class="nav-item">
+    <i class="fa-solid fa-file-arrow-up"></i>
+    <span>Upload Record</span>
+  </a>
+
+  <a href="ai-chatbot.html" class="nav-item">
+    <i class="fa-solid fa-robot"></i>
+    <span>AI Chatbot</span>
+  </a>
+
+  <a href="patient-case.html" class="nav-item">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Patient Cases</span>
+  </a>
+</nav>
+   
+
+
+    <div class="sidebar-bottom">
+      <div class="who">Doctor <div class="muted" style="font-weight:600">Logged in</div></div>
+      <button class="logout" onclick="onLogout()"><i class="fa-solid fa-right-from-bracket"></i>&nbsp; Logout</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+   <main class="main">
+    <header class="topbar" role="banner">
+      <div class="left-pill">
+        <span class="pill">HIPAA-Compliant System</span>
+        <span class="pill">End-to-End Encrypted</span>
+      </div>
+
+      <div class="right-pill">
+        <span class="pill success"><i class="fa-solid fa-circle-check" style="margin-right:6px"></i> System Status: Secure</span>
+      </div>
+    </header>
+
+    <!-- CENTER CONTENT (exact same as your original) -->
+    <section class="page-head">
+      <h1>Upload Patient Record</h1>
+      <p class="subtitle">Automatically detect and clean PHI, then generate encrypted embeddings</p>
+    </section>
+    
+    
+
+
+    <!-- Steps -->
+    <div class="step-row" id="stepsRow">
+      <div class="step-card" data-step="1">
+        <div class="step-top">
+          <div class="step-badge"><i class="fa-solid fa-upload"></i></div>
+          <div>
+            <div class="step-title">1. Upload</div>
+            <div class="step-sub">PDF or Text</div>
+          </div>
+        </div>
+        <div class="step-status"><span class="small-pill" id="step1Status">Pending</span></div>
+      </div>
+
+      <div class="step-card" data-step="2">
+        <div class="step-top">
+          <div class="step-badge"><i class="fa-solid fa-circle-info"></i></div>
+          <div>
+            <div class="step-title">2. Clean PHI</div>
+            <div class="step-sub">Auto-detect</div>
+          </div>
+        </div>
+        <div class="step-status"><span class="small-pill" id="step2Status">Pending</span></div>
+      </div>
+
+      <div class="step-card" data-step="3">
+        <div class="step-top">
+          <div class="step-badge"><i class="fa-solid fa-lock"></i></div>
+          <div>
+            <div class="step-title">3. Encrypt</div>
+            <div class="step-sub">Generate vectors</div>
+          </div>
+        </div>
+        <div class="step-status"><span class="small-pill" id="step3Status">Pending</span></div>
+      </div>
+    </div>
+
+    <!-- Upload Area -->
+    <div id="uploadArea" class="upload-box">
+      <div style="font-size:36px;color:#475569"><i class="fa-solid fa-file-medical"></i></div>
+      <div style="font-weight:700;font-size:18px">Upload Patient Record</div>
+      <div class="upload-helper">Drag and drop or click to browse</div>
+      <div>
+        <input id="fileInput" type="file" accept=".pdf,.txt,.docx" style="display:none" />
+        <button class="upload-cta" onclick="document.getElementById('fileInput').click()">Select File (PDF or Text)</button>
+      </div>
+      <div class="upload-helper">Supported formats: PDF, TXT, DOCX</div>
+    </div>
+
+    <!-- PHI preview, analysis, success (kept same) -->
+    <div id="phiArea" class="phi-card" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:700">Document Preview & PHI Detection</div>
+          <div class="small-muted">Protected Health Information highlighted in red</div>
+        </div>
+        <div id="phiCountBadge" class="phi-badge" style="display:none"></div>
+      </div>
+
+      <div id="phiPreviewBox" class="phi-preview" style="margin-top:12px">
+        <div class="phi-line" id="phiText">
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn-solid" onclick="cleanPHI()">⚠ Clean PHI Automatically</button>
+        <button class="btn-outline" onclick="goBackToUpload()">← Back</button>
+      </div>
+    </div>
+
+    <div id="analysisArea" style="display:none">
+      <div class="detection-panel">
+        <div class="detect-left">
+          <div style="font-weight:700;color:#9a3412">PHI Detection Control Panel</div>
+          <div class="small-muted">Advanced privacy monitoring system</div>
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;gap:8px;align-items:center">
+              <div style="width:10px;height:10px;background:#ef4444;border-radius:50%"></div>
+              <div>Name</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div style="width:10px;height:10px;background:#f97316;border-radius:50%"></div>
+              <div>Phone Number</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div style="width:10px;height:10px;background:#f59e0b;border-radius:50%"></div>
+              <div>Address</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div style="width:10px;height:10px;background:#ef4444;border-radius:50%"></div>
+              <div>Medical ID / SSN</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detect-right">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:700">Detection Analysis</div>
+            <div><span class="small-pill" style="background:#fff0f0;color:#ef4444">PHI detected. Manual review recommended.</span></div>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="small-muted">Masking Confidence</div>
+            <div style="height:10px;background:#f1f5f9;border-radius:6px;margin-top:6px;overflow:hidden">
+              <div id="maskBar" style="width:98.7%;height:100%;background:#10b981"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:8px">
+              <div class="small-muted">Redacted Fields</div>
+              <div class="small-pill" id="redactedCount"></div>
+
+            </div>
+
+            <div style="margin-top:12px" class="small-muted">Severity Distribution</div>
+            <div style="height:8px;background:#fff;border-radius:6px;margin-top:8px;overflow:hidden">
+              <div style="width:60%;height:100%;background:#ef4444;display:inline-block"></div>
+              <div style="width:30%;height:100%;background:#f97316;display:inline-block"></div>
+              <div style="width:10%;height:100%;background:#fde68a;display:inline-block"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="compare">
+        <div style="font-weight:700">Before vs After - PHI Cleaning</div>
+        <div class="small-muted">Compare original and sanitized versions</div>
+
+        <div class="compare-grid" style="margin-top:12px">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <i class="fa-solid fa-eye"></i>
+              <div style="font-weight:700">Before (Original)</div>
+              <div style="margin-left:8px"><span class="small-pill" style="background:#ffeaea;color:#ef4444">Contains PHI</span></div>
+            </div>
+            <div class="compare-box before" id="beforeText">
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <i class="fa-solid fa-check"></i>
+              <div style="font-weight:700">After (Cleaned)</div>
+              <div style="margin-left:8px"><span class="small-pill" style="background:#ecfdf5;color:#064e3b">PHI Removed</span></div>
+            </div>
+            <div class="compare-box after" id="afterText">
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;justify-content:center">
+          <button class="btn-solid" style="width:360px" onclick="generateEmbeddings()">🔒 Generate Embeddings & Encrypt</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="successArea" style="display:none">
+      <div class="success-banner">
+        <div class="success-left">
+          <div class="success-icon"><i class="fa-solid fa-lock"></i></div>
+          <div>
+            <div style="font-weight:800">Record Successfully Encrypted</div>
+            <div class="small-muted">Embeddings generated and stored securely. Vector ID: <b id="vectorId"></b></div>
+          </div>
+        </div>
+        <div>
+  <a href="ai-chatbot.html" class="btn-outline">Query with AI</a>
+</div>
+
+      </div>
+    </div>
+
+    <div style="height:40px"></div>
+
+    <footer class="footer" style="margin-top:22px;padding:14px;border-radius:10px;text-align:center;background:linear-gradient(180deg,#0f172a,#0b1220);color:#fff;font-size:13px">
+      All patient data encrypted using AES-256-GCM and processed in-memory only • HIPAA & SOC 2 Compliant
+    </footer>
+
+  </main>
+</div>
+
+
+
+<script src="js/api.js"></script>
+<script>
+let step = 1;
+let currentPatientId = null;
+
+const fileInput = document.getElementById("fileInput");
+const uploadArea = document.getElementById("uploadArea");
+
+// Restore patient id if exists
+const savedPatientId = localStorage.getItem("patient_id");
+if (savedPatientId) {
+  currentPatientId = savedPatientId;
+}
+
+/* ---------------- STEP UI HANDLING ---------------- */
+function setStep(newStep) {
+  step = newStep;
+
+  document.getElementById("step1Status").innerText = step >= 2 ? "Complete" : "Pending";
+  document.getElementById("step2Status").innerText = step >= 3 ? "Complete" : "Pending";
+  document.getElementById("step3Status").innerText = step >= 4 ? "Complete" : "Pending";
+
+  uploadArea.style.display = step === 1 ? "flex" : "none";
+  document.getElementById("phiArea").style.display = step === 2 ? "block" : "none";
+  document.getElementById("analysisArea").style.display = step === 3 ? "block" : "none";
+  document.getElementById("successArea").style.display = step === 4 ? "block" : "none";
+}
+
+/* ---------------- FILE UPLOAD ---------------- */
+fileInput.addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (file) uploadFile(file);
+});
+
+uploadArea.addEventListener("dragover", e => e.preventDefault());
+uploadArea.addEventListener("drop", e => {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (file) uploadFile(file);
+});
+
+async function uploadFile(file) {
+  showToast("Uploading file...");
+
+  const text = await file.text();
+
+  document.getElementById("phiText").innerText = text;
+  document.getElementById("beforeText").innerText = text;
+
+  const res = await fetch(`${API_BASE}/patients/upload`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders()
+    },
+    body: JSON.stringify({ text })
+  });
+
+  if (!res.ok) {
+    showToast("Upload failed");
+    return;
+  }
+
+  const data = await res.json();
+
+  currentPatientId = data.patient_id;
+  localStorage.setItem("patient_id", currentPatientId);
+
+  setStep(2);
+}
+function extractPHI(text) {
+  return {
+    name: text.match(/Patient Name:\s*(.*)/i)?.[1] || "—",
+    dob: text.match(/DOB:\s*(.*)/i)?.[1] || "—",
+    phone: text.match(/Phone:\s*(.*)/i)?.[1] || "—",
+    ssn: text.match(/SSN:\s*(.*)/i)?.[1] || "—"
+  };
+}
+
+/* ---------------- CLEAN PHI ---------------- */
+/* ---------------- CLEAN PHI ---------------- */
+async function cleanPHI() {
+  if (!currentPatientId) {
+    showToast("Patient ID missing");
+    return;
+  }
+
+  showToast("Cleaning PHI...");
+  
+  // Get the original text
+  const originalText = document.getElementById("beforeText").innerText;
+  
+  console.log("📤 Sending text to clean:", originalText.substring(0, 100) + "...");
+
+  const res = await fetch(
+    `${API_BASE}/clean-phi`,  // REMOVE ?patient_id=${currentPatientId}
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders()
+      },
+      body: JSON.stringify({
+        text: originalText,
+        patient_id: currentPatientId  // Send in body, not query params
+      })
+    }
+  );
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    showToast(`PHI cleaning failed: ${errorText}`);
+    console.error("PHI cleaning failed:", errorText);
+    return;
+  }
+
+  const data = await res.json();
+  // Extract PHI from original & cleaned text
+const before = extractPHI(originalText);
+const after = extractPHI(data.cleaned_text);
+
+
+  
+  console.log("📥 Received cleaned data:", data);
+  
+  // Store cleaned text globally for later use
+  window.cleanedText = data.cleaned_text;
+  
+  // Update UI
+  document.getElementById("phiCountBadge").style.display = "inline-block";
+  document.getElementById("phiCountBadge").innerText = 
+    `${data.redacted_count} PHI Items Detected`;
+
+  const afterBox = document.getElementById("afterText");
+  afterBox.innerHTML = ""; // clear previous
+  
+  if (data.cleaned_text && data.cleaned_text.trim()) {
+    afterBox.textContent = data.cleaned_text;
+    if (data.redacted_count > 0) {
+  showToast(`PHI cleaned! ${data.redacted_count} items redacted`);
+} else {
+  showToast("PHI cleaned!");
+}
+
+  } else {
+    afterBox.textContent = "[No cleaned text returned]";
+    showToast("Warning: No cleaned text returned");
+  }
+
+  const redactedEl = document.getElementById("redactedCount");
+
+if (data.redacted_count > 0) {
+  redactedEl.innerText = `${data.redacted_count} fields`;
+  redactedEl.style.display = "inline-block";
+} else {
+  redactedEl.style.display = "none";
+}
+
+  setStep(3);
+}
+
+
+/* ===============================
+   STORE RECORD IN DATABASE
+   (NO UI CHANGE)
+================================ */
+
+async function submitRecord() {
+  try {
+    const payload = {
+      patient_id: currentPatientId,
+      original_text: document.getElementById("beforeText")?.innerText || "",
+      cleaned_text: document.getElementById("afterText")?.innerText || "",
+      uploaded_at: new Date().toISOString()
+    };
+
+    const res = await fetch("http://127.0.0.1:5000/api/upload", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      showToast("❌ Record save failed");
+      console.error(data);
+      return;
+    }
+
+    console.log("✅ Record stored in DB:", data);
+    showToast("✅ Patient record stored securely");
+
+  } catch (err) {
+    console.error("Save error:", err);
+    showToast("❌ Network error while saving");
+  }
+}
+
+/* ---------------- GENERATE EMBEDDINGS ---------------- */
+async function generateEmbeddings() {
+  if (!currentPatientId || !window.cleanedText) {
+    showToast("Missing patient ID or cleaned text");
+    return;
+  }
+
+  showToast("Generating embeddings...");
+
+  const token = localStorage.getItem("access_token");
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/ai/embed", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`
+  },
+  body: JSON.stringify({
+    patient_id: currentPatientId,
+    text: window.cleanedText
+  })
+})
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error(err);
+      showToast("Embedding failed");
+      return;
+    }
+
+    const data = await res.json();
+
+    console.log("✅ Vector created:", data.vector_id);
+
+    document.getElementById("vectorId").innerText = data.vector_id;
+
+    setStep(4); // success screen
+    showToast("Embeddings generated successfully");
+
+  } catch (err) {
+    console.error("Embedding error:", err);
+    showToast("Network error during embedding");
+  }
+}
+
+
+
+function showToast(msg) {
+  const t = document.createElement("div");
+  t.innerText = msg;
+  Object.assign(t.style, {
+    position: "fixed",
+    right: "20px",
+    bottom: "20px",
+    background: "#0b1220",
+    color: "#fff",
+    padding: "10px 14px",
+    borderRadius: "8px",
+    zIndex: 9999
+  });
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+function goBackToUpload() {
+  fileInput.value = "";
+  setStep(1);
+}
+
+
+function onLogout() {
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href = "index.html";
+}
+
+setStep(1);
+</script>
+
+</body>
+</html>

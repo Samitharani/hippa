@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Admin Dashboard | MedAI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root{
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --text:#0f172a;
+  --muted:#64748b;
+  --accent:#2563eb;
+  --success:#16a34a;
+  --danger:#dc2626;
+  --radius:14px;
+}
+
+*{box-sizing:border-box;font-family:Inter,system-ui}
+
+body{margin:0;background:var(--bg);color:var(--text)}
+
+.app{
+  display:grid;
+  grid-template-columns:260px 1fr;
+  min-height:100vh;
+}
+
+.sidebar{
+  background:#fff;
+  border-right:1px solid var(--border);
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+}
+
+.brand{display:flex;gap:12px;align-items:center}
+.brand-icon{
+  width:46px;height:46;border-radius:10px;
+  background:#eef6ff;color:var(--accent);
+  display:flex;align-items:center;justify-content:center
+}
+.brand-title{font-weight:700}
+.brand-sub{font-size:12px;color:var(--muted)}
+
+.nav{margin-top:30px}
+.nav a{
+  display:flex;gap:10px;align-items:center;
+  padding:12px;border-radius:10px;
+  text-decoration:none;color:var(--text);
+  font-weight:600;background:#eef2ff;
+}
+
+.sidebar-bottom{margin-top:auto}
+.logout{
+  background:#fff;border:1px solid #e6eef7;
+  color:var(--accent);padding:8px;
+  border-radius:8px;cursor:pointer;
+  font-weight:700;width:100%;
+}
+
+.main{display:flex;flex-direction:column}
+
+
+
+.badge.success{
+  background:#dcfce7;color:var(--success);
+  padding:6px 12px;border-radius:999px;font-weight:700;
+}
+
+.content{padding:24px}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
+}
+
+.stat{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+}
+
+.stat-value{
+  font-size:28px;
+  font-weight:800;
+  margin:6px 0;
+}
+
+.muted{
+  color:var(--muted);
+  font-size:14px;
+}
+
+.pill{
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  background:#eef2ff;
+  color:var(--accent);
+}
+
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.pill{display:inline-block;padding:7px 12px;border-radius:999px;font-size:13px;background:#f8fafc;color:#334155;border:1px solid #eef2ff}
+.pill.success{background:#ecfdf5;color:var(--success);border:1px solid rgba(16,185,129,0.12)}
+.left-pill{display:flex;gap:10px;align-items:center}
+.center-close{display:flex;align-items:center;justify-content:center;margin:0 auto}
+.circle-btn{width:36px;height:36px;border-radius:50%;border:1px solid #e6eef7;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+
+.page-head{margin-top:6px}
+.page-head h1{margin:6px 0 4px 0;font-size:28px}
+.subtitle{margin:0;color:var(--muted);font-size:14px}
+
+/* ===== SYSTEM STATUS ===== */
+.security{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:14px;
+  margin-top:12px;
+}
+
+.sec{
+  background:#ecfdf5;
+  border:1px solid #bbf7d0;
+}
+
+
+/* ===== ACTIVITY ===== */
+.activity{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:18px;
+  margin-top:20px;
+}
+
+.bar{
+  height:12px;
+  border-radius:10px;
+  background:#dbeafe;
+  margin:6px 0;
+}
+
+.bar.green{background:#dcfce7}
+.bar.gray{background:#e5e7eb}
+
+.admin-tab{
+  flex:1;border:none;background:#f1f5f9;
+  padding:10px;border-radius:10px;
+  font-weight:700;cursor:pointer;
+}
+
+.admin-tab.active{
+  background:#eef6ff;color:var(--accent);
+}
+
+.footer{
+  background:#020617;color:#cbd5f5;
+  text-align:center;padding:12px;font-size:13px;
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-icon"><i class="fa-solid fa-shield-heart"></i></div>
+    <div>
+      <div class="brand-title">MedAI</div>
+      <div class="brand-sub">Secure</div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <a href="#"><i class="fa-solid fa-gear"></i> Admin Dashboard</a>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <p><strong>Admin</strong><br><span class="muted">Logged in</span></p>
+    <button class="logout"   onclick="onLogout()">
+        <i class="fa-solid fa-right-from-bracket"></i>&nbsp; Logout
+      </button>
+  </div>
+
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<header class="topbar" role="banner">
+      <div class="left-pill">
+        <span class="pill">HIPAA-Compliant System</span>
+        <span class="pill">End-to-End Encrypted</span>
+      </div>
+
+      <div class="right-pill">
+        <span class="pill success"><i class="fa-solid fa-circle-check" style="margin-right:6px"></i> System Status: Secure</span>
+      </div>
+    </header>
+
+<div class="content">
+
+<h1>Admin Dashboard</h1>
+<p class="muted">System governance, security, and compliance oversight</p>
+
+<!-- INTERNAL TABS -->
+<div class="card" style="margin:16px 0;padding:10px">
+  <div style="display:flex;gap:10px">
+    <button class="admin-tab active" onclick="switchAdminTab('overview',this)">
+      <i class="fa-solid fa-chart-line"></i> Overview
+    </button>
+    <button class="admin-tab" onclick="switchAdminTab('audit',this)">
+      <i class="fa-solid fa-file-lines"></i> Audit Logs
+    </button>
+    
+    <button class="admin-tab" onclick="switchAdminTab('roles',this)">
+      <i class="fa-solid fa-users-gear"></i> User Roles
+    </button>
+    <button class="admin-tab" onclick="switchAdminTab('settings',this)">
+      <i class="fa-solid fa-shield-halved"></i> System settings
+    </button>
+  </div>
+</div>
+
+<!-- OVERVIEW TAB -->
+<div id="tab-overview" class="admin-tab-content">
+
+      <!-- STATS -->
+      <section class="cards">
+        <div class="card">
+          <div class="stat">
+            <div>
+              <strong>Total System Users</strong>
+              <div class="stat-value" id="totalUsers">--</div>
+
+
+              <div class="muted" id="roleSplit">--</div>
+
+            </div>
+            <span class="pill">Active</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="stat">
+            <div>
+              <strong>Total Access Events</strong>
+               <div class="stat-value" id="totalEvents">--</div>
+
+            </div>
+            <span class="pill" style="background:#dcfce7;color:var(--success)">Today</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="stat">
+            <div>
+              <strong>Failed Login Attempts</strong>
+              <div class="stat-value" id="failedLogins" style="color:var(--danger)">--</div>
+
+            </div>
+            <span class="pill" style="background:#fee2e2;color:var(--danger)">Alert</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="stat">
+            <div>
+              <strong>PHI Cleaning Operations</strong>
+              <div class="stat-value" id="phiCleaned">--</div>
+
+              
+            </div>
+            <span class="pill" style="background:#f5f3ff;color:#7c3aed">Automated</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SYSTEM STATUS -->
+      <section class="card" style="margin-top:20px">
+        <h3>System Status</h3>
+        <p class="muted">Real-time health and security monitoring</p>
+        <div class="security">
+          <div class="card sec"><strong>Encryption</strong><br>Enabled (AES-256)</div>
+          
+          <div class="card sec"><strong>Vector DB</strong><br>Active</div>
+          <div class="card sec"><strong>RBAC</strong><br>Enforced</div>
+          <div class="card sec"><strong>Zero-Knowledge</strong><br>Operational</div>
+        </div>
+      </section>
+
+      <!-- ACTIVITY -->
+      <section class="activity">
+        <div class="card">
+          <h3>Access Activity (24h)</h3>
+          <p class="muted">Hourly access pattern</p>
+          <div>14:00<div class="bar" style="width:80%"></div></div>
+          <div>13:00<div class="bar" style="width:72%"></div></div>
+          <div>12:00<div class="bar green" style="width:50%"></div></div>
+          <div>11:00<div class="bar green" style="width:65%"></div></div>
+          <div>10:00<div class="bar" style="width:90%"></div></div>
+          <div>08:00<div class="bar gray" style="width:40%"></div></div>
+        </div>
+
+        <div class="card">
+          <h3>Recent System Events</h3>
+          <ul class="muted" id="recentActivity"></ul>
+
+        </div>
+      </section>
+
+    </div>
+
+<!-- AUDIT -->
+<!-- ================= AUDIT LOGS TAB ================= -->
+<div id="tab-audit" class="admin-tab-content" style="display:none">
+
+  <!-- HEADER -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+    <div>
+      <h2 style="margin:0">Audit Logs</h2>
+      <p class="muted">HIPAA-compliant access tracking and security monitoring</p>
+    </div>
+    <style>
+/* ===== AUDIT TABLE ===== */
+.audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.audit-table th,
+.audit-table td {
+  text-align: left;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.audit-table th {
+  font-weight: 700;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.role-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: lowercase;
+}
+
+.status-success {
+  background: #dcfce7;
+  color: var(--success);
+}
+
+.status-warning {
+  background: #fff7ed;
+  color: #f97316;
+}
+
+.status-error {
+  background: #fee2e2;
+  color: var(--danger);
+}
+
+/* Highlight rows with error/warning */
+.row-error {
+  background: #fef2f2;
+}
+
+.row-warning {
+  background: #fffbeb;
+}
+
+/* Make table responsive */
+@media(max-width: 1024px) {
+  .audit-table th, .audit-table td {
+    padding: 8px 6px;
+    font-size: 13px;
+  }
+}
+</style>
+
+    <button id="exportLogsBtn" onclick="exportAuditLogs()" style="
+      background:#020617;
+      color:#fff;
+      border:none;
+      padding:12px 18px;
+      border-radius:10px;
+      font-weight:700;
+      cursor:pointer">
+      <i class="fa-solid fa-download"></i> Export Logs
+    </button>
+  </div>
+
+  <!-- STATS -->
+  <section class="cards">
+    <div class="card">
+      <strong>Total Events</strong>
+      <div class="stat-value" id="auditTotalEvents">--</div>
+    </div>
+
+    <div class="card">
+      <strong>Successful</strong>
+      <div class="stat-value" id="auditSuccessEvents" style="color:#16a34a">--</div>
+    </div>
+
+    <div class="card">
+      <strong>Warnings</strong>
+      <div class="stat-value" id="auditWarningEvents" style="color:#f97316">--</div>
+    </div>
+
+    <div class="card">
+      <strong>Failed</strong>
+      <div class="stat-value" id="auditFailedEvents">--</div>
+    </div>
+  </section>
+
+  <!-- FILTER -->
+  <section class="card" style="margin-top:24px">
+    <h3>Filter Logs</h3>
+    <p class="muted">Search and filter audit events</p>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:16px;margin-top:16px">
+      <input id="auditSearch" class="filter-input" placeholder="Search logs...">
+
+      <select id="roleFilter" class="filter-select">
+        <option value="">All Roles</option>
+        <option>Doctor</option>
+        <option>Nurse</option>
+        <option>Admin</option>
+      </select>
+
+      <select id="statusFilter" class="filter-select">
+        <option value="">All Status</option>
+        <option>Success</option>
+        <option>Warning</option>
+        <option>Error</option>
+      </select>
+
+      <select id="eventFilter" class="filter-select">
+        <option value="">All Events</option>
+      </select>
+    </div>
+  </section>
+
+  <!-- TABLE -->
+  <section class="card" style="margin-top:24px">
+    <h3>Recent Activity</h3>
+    <p class="muted">Showing 8 most recent events</p>
+
+    <table class="audit-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Role</th>
+          <th>Action</th>
+          <th>Timestamp</th>
+          <th>Status</th>
+          <th>IP Address</th>
+        </tr>
+      </thead>
+
+      <tbody id="auditTable"></tbody>
+
+    </table>
+  </section>
+
+</div>
+
+
+<!-- ROLES -->
+<div id="tab-roles" class="admin-tab-content" style="display:none">
+  <h2>User Roles</h2>
+  <p class="muted">Role-based permissions</p>
+
+<div class="card-grid">
+  <div class="card">
+    <span class="label">Total Roles</span>
+    <h3 id="totalRoles">0</h3>
+  </div>
+
+  <div class="card">
+    <span class="label">System Roles</span>
+    <h3 id="systemRoles">0</h3>
+  </div>
+
+  <div class="card">
+    <span class="label">Custom Roles</span>
+    <h3 id="customRoles">0</h3>
+  </div>
+</div>
+<div class="card">
+  <h3>All Roles</h3>
+  <p class="subtext">Define access levels and permissions</p>
+
+  <table class="audit-table">
+    <thead>
+      <tr>
+        <th>Role Name</th>
+        <th>Description</th>
+        <th>Users</th>
+        <th>Permissions</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="rolesTableBody"></tbody>
+
+    <tbody>
+      <tr>
+      
+
+     
+
+     
+        </td>
+      </tr>   </tbody>
+  </table>
+</div>
+</div>
+<style>
+.page-header h2{
+  font-size:22px;
+  margin-bottom:4px;
+}
+
+.page-header p{
+  color:#64748b;
+  margin-bottom:24px;
+}
+
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-bottom:24px;
+}
+
+.label{
+  font-size:14px;
+  color:#64748b;
+}
+
+.subtext{
+  color:#64748b;
+  margin-bottom:16px;
+}
+
+.btn-outline{
+  padding:6px 14px;
+  border-radius:10px;
+  border:1px solid #2563eb;
+  background:#fff;
+  color:#2563eb;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.btn-outline:hover{
+  background:#2563eb;
+  color:#fff;
+}
+</style>  
+<div id="tab-settings" class="admin-tab-content" style="display:none">
+
+<h2>System Settings</h2>
+<p class="muted">Configure system-wide security and operational parameters</p>
+
+<section class="card" style="margin-top:20px">
+  <h3>Security & Compliance Settings</h3>
+  <p class="muted">Adjust system behavior and security policies</p>
+
+  <div style="margin-top:20px">
+    <strong>PHI Detection Sensitivity</strong>
+    <select class="filter-select" style="width:100%;margin-top:8px">
+      <option>Low</option>
+      <option selected>Medium (Recommended)</option>
+      <option>High</option>
+    </select>
+    <p class="muted">Controls how aggressively PHI is detected</p>
+  </div>
+
+  <div style="margin-top:20px">
+    <strong>Session Timeout</strong>
+    <select class="filter-select" style="width:100%;margin-top:8px">
+      <option>15 minutes</option>
+      <option selected>30 minutes</option>
+      <option>60 minutes</option>
+    </select>
+    <p class="muted">Automatic logout after inactivity</p>
+  </div>
+
+  <div style="margin-top:20px">
+    <strong>Audit Log Retention</strong>
+    <select class="filter-select" style="width:100%;margin-top:8px">
+      <option>30 days</option>
+      <option selected>90 days</option>
+      <option>1 year</option>
+    </select>
+    <p class="muted">HIPAA compliant retention policy</p>
+  </div>
+
+  <div style="margin-top:20px">
+    <strong>Student Mode</strong>
+    <select class="filter-select" style="width:100%;margin-top:8px">
+      <option selected>Disabled</option>
+      <option>Enabled</option>
+    </select>
+    <p class="muted">Training mode with synthetic data</p>
+  </div>
+
+  <button style="
+    margin-top:20px;
+    background:#2563eb;
+    color:#fff;
+    border:none;
+    padding:12px 20px;
+    border-radius:10px;
+    font-weight:700;
+    cursor:pointer">
+    💾 Save Settings
+  </button>
+</section>
+
+<section class="cards" style="margin-top:20px">
+  <div class="card">
+    <strong>PHI Sensitivity</strong>
+    <div id="curPhi" class="stat-value">Medium</div>
+  </div>
+
+  <div class="card">
+    <strong>Session Timeout</strong>
+    <div id="curSession" class="stat-value">30 mins</div>
+  </div>
+
+  <div class="card">
+    <strong>Audit Retention</strong>
+    <div id="curRetention" class="stat-value">90 days</div>
+  </div>
+
+  <div class="card">
+    <strong>Student Mode</strong>
+    <div id="curStudent" class="stat-value">Disabled</div>
+  </div>
+</section>
+
+</div>
+
+</div>
+
+
+
+
+<footer class="footer">
+🔒 AES-256-GCM · HIPAA & SOC-2 Compliant
+</footer>
+
+</main>
+</div>
+<script>
+const API_BASE = "http://127.0.0.1:8000";
+
+
+function getAuthHeaders(){
+  const token = localStorage.getItem("access_token");
+
+  if (!token) {
+    alert("Session expired. Please login again.");
+    window.location.href = "index.html";
+    throw new Error("No token");
+  }
+
+  return {
+    "Authorization": `Bearer ${token}`,
+    "Content-Type": "application/json"
+  };
+}
+
+
+function switchAdminTab(tab, btn){
+  document.querySelectorAll('.admin-tab-content')
+    .forEach(t => t.style.display='none');
+
+  document.querySelectorAll('.admin-tab')
+    .forEach(b => b.classList.remove('active'));
+
+  document.getElementById('tab-'+tab).style.display='block';
+  btn.classList.add('active');
+
+  // load tab-specific data
+  if(tab === 'overview'){
+    loadDashboardStats();
+    loadRecentActivity();
+  }
+  if(tab === 'audit'){
+    loadAuditEvents();
+    loadAuditStats();
+    populateEventFilter();
+  }
+  if(tab === 'roles'){
+    loadRoles();
+  }
+  if(tab === 'settings'){
+    // load persisted settings when opening tab
+    loadSettings();
+  }
+}
+
+// ----------------------------
+// 📊 LOAD DASHBOARD STATS
+// ----------------------------
+async function loadDashboardStats(){
+  try{
+    const res = await fetch(`${API_BASE}/dashboard/stats`, {
+      headers: getAuthHeaders()
+    });
+
+    if(!res.ok) throw new Error("Unauthorized / API error");
+
+    const data = await res.json();
+
+    // Defensive DOM updates to avoid errors if elements are missing
+    const elTotalUsers = document.getElementById("totalUsers");
+    if(elTotalUsers) elTotalUsers.innerText = data.total_users ?? "0";
+    else console.warn('totalUsers element not found - skipping');
+
+    const elTotalEvents = document.getElementById("totalEvents");
+    if(elTotalEvents) elTotalEvents.innerText = data.total_events ?? "0";
+    else console.warn('totalEvents element not found - skipping');
+
+    const elRoleSplit = document.getElementById("roleSplit");
+    if(elRoleSplit) elRoleSplit.innerText = `Doctors ${data.doctors} · Nurses ${data.nurses} · Admins ${data.admins}`;
+    else console.warn('roleSplit element not found - skipping');
+
+    const elPhiCleaned = document.getElementById("phiCleaned");
+    if(elPhiCleaned) elPhiCleaned.innerText = data.cleaned_records ?? "0";
+    else console.warn('phiCleaned element not found - skipping');
+
+    const elVectorCount = document.getElementById("vectorCount");
+    if(elVectorCount) elVectorCount.innerText = data.encrypted_vectors ?? "0";
+    else console.warn('vectorCount element not found - skipping');
+
+    const elFailedLogins = document.getElementById("failedLogins");
+    if(elFailedLogins) elFailedLogins.innerText = data.failed_logins ?? "0";
+    else console.warn('failedLogins element not found - skipping');
+
+    const elAuditFailed = document.getElementById("auditFailed");
+    if(elAuditFailed) elAuditFailed.innerText = data.failed_logins ?? "0";
+    else console.warn('auditFailed element not found - skipping');
+
+    // populate role counts (defensive)
+    if(document.getElementById('totalRoles')){
+      // fetch role summary
+      fetch(`${API_BASE}/admin/audit/roles`, { headers: getAuthHeaders() })
+        .then(r => r.json())
+        .then(rs => {
+          const elTotalRoles = document.getElementById('totalRoles');
+          const elSystemRoles = document.getElementById('systemRoles');
+          const elCustomRoles = document.getElementById('customRoles');
+
+          if(elTotalRoles) elTotalRoles.innerText = rs.total_roles || '0';
+          if(elSystemRoles) elSystemRoles.innerText = rs.system_roles || '0';
+          if(elCustomRoles) elCustomRoles.innerText = rs.custom_roles || '0';
+
+          const tbody = document.getElementById('rolesTableBody');
+          if(tbody){
+            tbody.innerHTML = '';
+            rs.roles.forEach(r => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td>${escapeHtml(r.role)}</td>
+                <td>${escapeHtml(r.description || '-')}</td>
+                <td>${r.count}</td>
+                <td>${escapeHtml(r.permissions || '-')}</td>
+                <td><button class="btn-outline">Manage</button></td>
+              `;
+              tbody.appendChild(tr);
+            });
+          }
+        }).catch(e => console.error('Failed to load roles', e));
+    }
+
+  }catch(err){
+    console.error("❌ Stats load failed", err);
+  }
+}
+
+// ----------------------------
+// 🧾 LOAD RECENT ACTIVITY
+// ----------------------------
+async function loadRecentActivity(){
+  try{
+    const res = await fetch(`${API_BASE}/dashboard/activity`, {
+      headers: getAuthHeaders()
+    });
+
+    if(!res.ok) throw new Error("Unauthorized / API error");
+
+    const logs = await res.json();
+    const ul = document.getElementById("recentActivity");
+    ul.innerHTML = "";
+
+    logs.forEach(log => {
+      const li = document.createElement("li");
+      li.innerText = `🔐 ${log.actor} → ${log.event}`;
+      ul.appendChild(li);
+    });
+
+  }catch(err){
+    console.error("❌ Activity load failed", err);
+  }
+}
+
+// ----------------------------
+// 🧾 AUDIT LOGS
+// ----------------------------
+async function loadAuditEvents({limit=50, skip=0} = {}){
+  try{
+    const q = document.getElementById('auditSearch').value || '';
+    const role = document.getElementById('roleFilter').value || '';
+    const status = document.getElementById('statusFilter').value || '';
+    const event = document.getElementById('eventFilter').value || '';
+
+    const params = new URLSearchParams({ limit, skip });
+    if(q) params.set('q', q);
+    if(role) params.set('role', role);
+    if(status) params.set('status', status);
+    if(event) params.set('event', event);
+
+    const res = await fetch(`${API_BASE}/admin/audit?${params.toString()}`, {
+      headers: getAuthHeaders()
+    });
+
+    if(!res.ok) throw new Error('Unauthorized / API error');
+
+    const data = await res.json();
+    const tbody = document.getElementById('auditTable');
+    tbody.innerHTML = '';
+
+    data.events.forEach(e => {
+      const tr = document.createElement('tr');
+
+      const statusText = (e.detail && e.detail.status) || 'Success';
+      const statusClass = statusText === 'Success' ? 'status-success' : (statusText === 'Warning' ? 'status-warning' : 'status-error');
+
+      tr.innerHTML = `
+        <td>${escapeHtml(e.actor || '-')}</td>
+        <td><span class="role-pill">${escapeHtml(e.role || '')}</span></td>
+        <td>${escapeHtml(e.event)}</td>
+        <td>${new Date(e.timestamp).toLocaleString()}</td>
+        <td><span class="pill ${statusClass}">${statusText}</span></td>
+        <td>${escapeHtml((e.detail && e.detail.ip) || '-')}</td>
+      `;
+
+      // mark rows with warning/error
+      if(statusText === 'Warning') tr.classList.add('row-warning');
+      if(statusText === 'Error') tr.classList.add('row-error');
+
+      tbody.appendChild(tr);
+    });
+
+  }catch(err){
+    console.error('❌ Audit load failed', err);
+  }
+}
+
+async function loadAuditStats(){
+  try{
+    const res = await fetch(`${API_BASE}/admin/audit/stats`, {
+      headers: getAuthHeaders()
+    });
+    if(!res.ok) throw new Error('API error');
+    const s = await res.json();
+
+    document.getElementById('auditTotalEvents').innerText = s.total || '0';
+    document.getElementById('auditSuccessEvents').innerText = s.success || '0';
+    document.getElementById('auditWarningEvents').innerText = s.warning || '0';
+    document.getElementById('auditFailedEvents').innerText = s.failed || '0';
+
+  }catch(err){
+    console.error('❌ Audit stats failed', err);
+  }
+}
+
+// ----------------------------
+// 👥 ROLES
+// ----------------------------
+async function loadRoles(){
+  try{
+    const res = await fetch(`${API_BASE}/admin/audit/roles`, {
+      headers: getAuthHeaders()
+    });
+    if(!res.ok) throw new Error('API error');
+    const r = await res.json();
+
+    document.getElementById('totalRoles').innerText = r.total_roles ?? '0';
+    document.getElementById('systemRoles').innerText = r.system_roles ?? '0';
+    document.getElementById('customRoles').innerText = r.custom_roles ?? '0';
+
+    const tbody = document.getElementById('rolesTableBody');
+    tbody.innerHTML = '';
+
+    r.roles.forEach(rr => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(rr.role)}</td>
+        <td>${escapeHtml(rr.description || '-')}</td>
+        <td>${rr.count}</td>
+        <td>${escapeHtml(rr.permissions || '-')}</td>
+        <td><button class="btn-outline" onclick="alert('Manage role not implemented')">Manage</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+  }catch(err){
+    console.error('❌ Roles load failed', err);
+  }
+}
+
+// ----------------------------
+// ⚙️ SETTINGS
+// ----------------------------
+async function loadSettings(){
+  try{
+    const res = await fetch(`${API_BASE}/admin/audit/settings`, { headers: getAuthHeaders() });
+    if(!res.ok) throw new Error('API error');
+    const s = await res.json();
+
+    // set selects (defensive)
+    const phiSel = document.getElementById('phiSensitivitySelect');
+    if(phiSel) phiSel.value = s.phi_sensitivity || 'Medium'; else console.warn('phiSensitivitySelect not found');
+
+    const sessionSel = document.getElementById('sessionTimeoutSelect');
+    if(sessionSel) sessionSel.value = s.session_timeout || '30 minutes'; else console.warn('sessionTimeoutSelect not found');
+
+    const retentionSel = document.getElementById('auditRetentionSelect');
+    if(retentionSel) retentionSel.value = s.audit_log_retention || '90 days'; else console.warn('auditRetentionSelect not found');
+
+    const studentSel = document.getElementById('studentModeSelect');
+    if(studentSel) studentSel.value = s.student_mode || 'Disabled'; else console.warn('studentModeSelect not found');
+
+    // update summary cards (defensive)
+    const curPhi = document.getElementById('curPhi'); if(curPhi) curPhi.innerText = (phiSel && phiSel.value) || s.phi_sensitivity || 'Medium';
+    const curSession = document.getElementById('curSession'); if(curSession) curSession.innerText = (sessionSel && sessionSel.value) || s.session_timeout || '30 minutes';
+    const curRetention = document.getElementById('curRetention'); if(curRetention) curRetention.innerText = (retentionSel && retentionSel.value) || s.audit_log_retention || '90 days';
+    const curStudent = document.getElementById('curStudent'); if(curStudent) curStudent.innerText = (studentSel && studentSel.value) || s.student_mode || 'Disabled';
+
+  }catch(err){
+    console.error('❌ Settings load failed', err);
+  }
+}
+
+async function saveSettings(){
+  const btn = document.getElementById('saveSettingsBtn');
+  if(btn) btn.disabled = true;
+  try{
+    const payload = {
+      phi_sensitivity: document.getElementById('phiSensitivitySelect').value,
+      session_timeout: document.getElementById('sessionTimeoutSelect').value,
+      audit_log_retention: document.getElementById('auditRetentionSelect').value,
+      student_mode: document.getElementById('studentModeSelect').value
+    };
+
+    const res = await fetch(`${API_BASE}/admin/audit/settings`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload)
+    });
+
+    if(!res.ok){
+      // attempt to surface server error message
+      let msg = 'Save failed';
+      try{ const errBody = await res.json(); if(errBody && errBody.detail) msg = errBody.detail; }catch(e){}
+      throw new Error(msg);
+    }
+
+    const r = await res.json();
+
+    // reload persisted settings from server to ensure UI matches saved state
+    await loadSettings();
+
+    showToast('Settings saved', 'success');
+  }catch(err){
+    console.error('❌ Save settings failed', err);
+    showToast(`Save failed: ${err.message}`, 'error');
+  }finally{
+    if(btn) btn.disabled = false;
+  }
+}
+
+// attach save button listener and add live-update handlers for selects
+window.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('saveSettingsBtn');
+  if(btn) btn.addEventListener('click', saveSettings);
+
+  // live update summary when selects change
+  const phi = document.getElementById('phiSensitivitySelect');
+  const session = document.getElementById('sessionTimeoutSelect');
+  const retention = document.getElementById('auditRetentionSelect');
+  const student = document.getElementById('studentModeSelect');
+
+  if(phi) phi.addEventListener('change', e => document.getElementById('curPhi').innerText = e.target.value);
+  if(session) session.addEventListener('change', e => document.getElementById('curSession').innerText = e.target.value);
+  if(retention) retention.addEventListener('change', e => document.getElementById('curRetention').innerText = e.target.value);
+  if(student) student.addEventListener('change', e => document.getElementById('curStudent').innerText = e.target.value);
+
+});
+
+// small toast utility
+function showToast(msg, type='info'){
+  const t = document.createElement('div');
+  t.innerText = msg;
+  t.style.position = 'fixed';
+  t.style.right = '20px';
+  t.style.top = '20px';
+  t.style.padding = '10px 14px';
+  t.style.borderRadius = '8px';
+  t.style.color = '#fff';
+  t.style.zIndex = 9999;
+  t.style.boxShadow = '0 6px 18px rgba(2,6,23,0.2)';
+  if(type === 'success') t.style.background = '#16a34a';
+  else if(type === 'error') t.style.background = '#dc2626';
+  else t.style.background = '#2563eb';
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.addEventListener('transitionend', () => t.remove()); }, 2600);
+}
+
+async function populateEventFilter(){
+  try{
+    const res = await fetch(`${API_BASE}/admin/audit/events`, {
+      headers: getAuthHeaders()
+    });
+
+    if(!res.ok) throw new Error('API error');
+    const events = await res.json();
+    const sel = document.getElementById('eventFilter');
+    sel.innerHTML = '<option value="">All Events</option>';
+    events.forEach(ev => {
+      const opt = document.createElement('option');
+      opt.value = ev;
+      opt.innerText = ev.replace(/_/g,' ');
+      sel.appendChild(opt);
+    });
+  }catch(err){
+    console.error('❌ Event list load failed', err);
+  }
+}
+
+async function exportAuditLogs(){
+  try{
+    const q = document.getElementById('auditSearch').value || '';
+    const role = document.getElementById('roleFilter').value || '';
+    const status = document.getElementById('statusFilter').value || '';
+    const event = document.getElementById('eventFilter').value || '';
+
+    const body = { q, role, status, event };
+
+    const res = await fetch(`${API_BASE}/admin/audit/export`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(body)
+    });
+
+    if(!res.ok) throw new Error('Export failed');
+
+    const csv = await res.text();
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'audit_export.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+
+  }catch(err){
+    console.error('❌ Export failed', err);
+    alert('Export failed');
+  }
+}
+
+function escapeHtml(str){
+  if(!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// ----------------------------
+// 🚀 INIT
+// ----------------------------
+window.addEventListener("DOMContentLoaded", () => {
+  loadDashboardStats();
+  loadRecentActivity();
+
+  // attach audit filters
+  const search = document.getElementById('auditSearch');
+  const role = document.getElementById('roleFilter');
+  const status = document.getElementById('statusFilter');
+  const event = document.getElementById('eventFilter');
+
+  if(search) search.addEventListener('input', () => loadAuditEvents());
+  if(role) role.addEventListener('change', () => loadAuditEvents());
+  if(status) status.addEventListener('change', () => loadAuditEvents());
+  if(event) event.addEventListener('change', () => loadAuditEvents());
+});
+function onLogout(){
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href = "index.html";
+}
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Medical AI Assistant</title>
+<link rel="stylesheet" href="/frontend/style.css">
+</head>
+<body>
+
+<div class="container">
+
+  <div class="logo">
+    <img src="https://cdn-icons-png.flaticon.com/512/2966/2966486.png" />
+  </div>
+
+  <h1>Medical AI Assistant</h1>
+  <p class="subtitle">Encrypted Vector Search & HIPAA Compliance</p>
+
+  <div class="badge">✅ HIPAA-Compliant System</div>
+
+  <div class="card">
+    <button class="login-btn" onclick="login()">🔒 Secure Login</button>
+    <p id="error" style="color:red;margin-top:10px;"></p>
+
+    <p class="hint">Access your medical dashboard securely</p>
+
+    <label>Username</label>
+    <input type="text" placeholder="Enter your username" id="username">
+
+    <label>Password</label>
+    <input type="password" placeholder="Enter your password" id="password">
+
+    <label>Select Role</label>
+
+    <div class="roles">
+      <button class="role active"
+       data-role="doctor">Doctor</button>
+      <button class="role" data-role="nurse">Nurse</button>
+      <button class="role" data-role="admin">Admin</button>
+    </div>
+
+    <button class="login-btn" onclick="login()">🔒 Secure Login</button>
+  </div>
+
+  <p class="footer">🔐 End-to-end encrypted communication<br>All sessions are logged for HIPAA compliance</p>
+  
+</div>
+
+<script src="/frontend/script.js"></script>
+</body>
+</html>

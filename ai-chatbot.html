@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MedAI — Medical AI Chatbot</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+:root{
+  --bg:#f5f7fa;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --border:#e6eef7;
+  --accent:#2563eb;
+  --success:#10b981;
+  --radius:12px;
+  --sidebar:260px;
+  --gutter:24px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+  background:var(--bg);
+  color:#0f172a;
+}
+
+
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #fbfdff, #f7fbff);
+  border-right: 1px solid var(--border);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 2px 0 12px rgba(20, 36, 61, 0.02);
+}
+
+.brand { display: flex; gap: 12px; align-items: center; }
+
+.brand-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  background: #eef6ff;
+  color: var(--accent);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+}
+
+.brand-title { font-size: 18px; font-weight: 700; }
+.brand-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.nav { display: flex; flex-direction: column; gap: 8px; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: #0f172a;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.nav-item i { width: 18px; color: #475569; }
+
+.nav-item.active {
+  background: #eaf1ff;
+  color: var(--accent);
+}
+
+.nav-item.active i {
+  color: var(--accent);
+}
+
+.sidebar-bottom { margin-top: auto; padding-top: 20px; }
+
+.logout {
+  background: #fff;
+  border: 1px solid #eef2ff;
+  color: var(--accent);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  width: 100%;
+  text-align: left;
+}
+
+/* ----------------------- MAIN LAYOUT ----------------------- */
+.app { display:flex; min-height:100vh; }
+
+.main{
+  flex:1;
+  padding:28px 36px;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+}
+
+
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.pill{display:inline-block;padding:7px 12px;border-radius:999px;font-size:13px;background:#f8fafc;color:#334155;border:1px solid #eef2ff}
+.pill.success{background:#ecfdf5;color:var(--success);border:1px solid rgba(16,185,129,0.12)}
+.left-pill{display:flex;gap:10px;align-items:center}
+.center-close{display:flex;align-items:center;justify-content:center;margin:0 auto}
+.circle-btn{width:36px;height:36px;border-radius:50%;border:1px solid #e6eef7;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+
+
+/* CONTENT GRID */
+.content-wrap{
+  display:grid;
+  grid-template-columns:1fr 360px;
+  gap:24px;
+  padding:18px 32px 28px 32px;
+  flex:1;
+  align-items:start;
+}
+
+/* CHAT VIEW */
+.chat-area{
+  background:transparent;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  min-height:400px;
+}
+
+.bot-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:20px 22px;
+  box-shadow:0 6px 20px rgba(18,38,63,0.03);
+  max-width:900px;
+}
+
+.bot-row{ display:flex; gap:14px; align-items:flex-start; }
+
+.bot-avatar{
+  width:44px; height:44;
+  border-radius:10px;
+  background:#eef6ff;
+  color:var(--accent);
+  display:flex; justify-content:center; align-items:center;
+  font-size:18px;
+  flex:0 0 44px;
+  margin-top:4px;
+}
+
+.bot-content p{ margin:0; color:#0b1220; line-height:1.6; font-size:16px; }
+
+.divider{ height:1px; background:#f1f5f9; margin:14px 0; border-radius:4px; }
+
+.safe-badge{
+  display:inline-block;
+  background:var(--success);
+  color:white;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:700;
+  font-size:13px;
+}
+
+.sources{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+
+.source-tag{
+  background:#eef2f4;
+  border:1px solid #e7edf1;
+  padding:8px 10px;
+  border-radius:8px;
+  font-size:13px;
+  color:#0b1220;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* Right sidebar panels */
+.right-panel{ display:flex; flex-direction:column; gap:16px; }
+
+.panel{
+  background:var(--card);
+  border:1px solid var(--border);
+  padding:14px;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(2,6,23,0.02);
+}
+
+.panel h4{ margin:0 0 8px; font-size:15px; }
+.panel p{ margin:6px 0; color:var(--muted); font-size:13px; }
+
+/* Bottom chat input */
+.bottom-bar{
+  background:var(--card);
+  border-top:1px solid var(--border);
+  padding:14px 32px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.input{
+  flex:1;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid #dfe6ee;
+  font-size:15px;
+}
+
+.send-btn{
+  background:#0b1220;
+  color:white;
+  padding:10px 18px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.note{ color:var(--muted); font-size:13px; }
+.footer{margin-top:22px;padding:14px;border-radius:10px;text-align:center;background:linear-gradient(180deg,#0f172a,#0b1220);color:#fff;font-size:13px}
+
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<aside class="sidebar" aria-label="Sidebar">
+    <div class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-shield-heart"></i></div>
+      <div>
+        <div class="brand-title">MedAI</div>
+        <div class="brand-sub">Secure</div>
+      </div>
+    </div>
+     <nav class="nav" aria-label="Main navigation">
+  <a href="doctor.html" class="nav-item">
+    <i class="fa-solid fa-house"></i>
+    <span>Dashboard</span>
+  </a>
+
+  <a href="upload.html" class="nav-item">
+    <i class="fa-solid fa-file-arrow-up"></i>
+    <span>Upload Record</span>
+  </a>
+
+  <a href="ai-chatbot.html" class="nav-item">
+    <i class="fa-solid fa-robot"></i>
+    <span>AI Chatbot</span>
+  </a>
+
+  <a href="patient-case.html" class="nav-item">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Patient Cases</span>
+  </a>
+</nav>
+
+    <div class="sidebar-bottom">
+      <div class="who">Doctor <div class="muted" style="font-weight:600">Logged in</div></div>
+      <button class="logout"  onclick="onLogout()"><i class="fa-solid fa-right-from-bracket"></i>&nbsp; Logout</button>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- TOPBAR -->
+
+    <header class="topbar" role="banner">
+      <div class="left-pill">
+        <span class="pill">HIPAA-Compliant System</span>
+        <span class="pill">End-to-End Encrypted</span>
+      </div>
+
+      <div class="right-pill">
+        <span class="pill success"><i class="fa-solid fa-circle-check" style="margin-right:6px"></i> System Status: Secure</span>
+      </div>
+    </header>
+
+<!-- HEADING -->
+<div class="page-head">
+  <div>
+    <h1>Medical AI Chatbot</h1>
+    <div class="subtitle">Ask questions about encrypted patient records</div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content-wrap">
+
+  <!-- CHAT AREA -->
+  <section class="chat-area" id="chatArea">
+
+    <div class="bot-card" id="initialBot">
+      <div class="bot-row">
+        <div class="bot-avatar">🤖</div>
+        <div class="bot-content">
+          <p>Hello! I’m your HIPAA-compliant medical AI assistant. How can I assist you today?</p>
+          <div class="divider"></div>
+          <span class="safe-badge">✔ Safe</span>
+
+          <div style="margin-top:10px">
+            <div style="font-weight:600;margin-bottom:8px;">Sources:</div>
+            <div class="sources" id="initialSources">
+              <!-- dynamic sources will be inserted here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:300px"></div>
+
+  </section>
+
+  <!-- RIGHT PANEL -->
+  <aside class="right-panel">
+    
+
+    <div class="panel">
+      <h4>Encrypted Vector Search</h4>
+      <p>Semantic retrieval with end-to-end encryption</p>
+      <div style="margin-top:12px;font-size:13px;color:var(--muted)">
+        Query → Vector Search → Decryption → Response
+      </div>
+    </div>
+
+    <div class="panel">
+      <h4>Top Similarity Matches</h4>
+      <div id="topMatchesList">
+        <!-- dynamic top matches will be rendered here -->
+      </div>
+    </div>
+
+    <div class="panel">
+      <h4>Patient History Used</h4>
+      <div id="patientsUsedList">
+        <!-- dynamic patient history will be rendered here -->
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<!-- CHAT INPUT -->
+<div class="bottom-bar">
+  <input id="chatInput" class="input" placeholder="Ask a medical question..." onkeydown="if(event.key==='Enter') sendQuery()">
+  <button class="send-btn" onclick="sendQuery()">Send</button>
+
+</div>
+<footer class="footer">
+      All patient data encrypted using AES-256-GCM and processed in-memory only • HIPAA & SOC 2 Compliant
+    </footer>
+
+</main>
+
+</div>
+<script src="js/api.js"></script>
+<script>
+const chatArea = document.getElementById('chatArea');
+
+function escapeHtml(t){
+  return t.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+}
+
+function createBotCard(answer, sources = [], safe = true){
+  const card = document.createElement('div');
+  card.className = 'bot-card';
+
+  // support structured answers (object) or plain text
+  let contentHtml = '';
+  if(answer && typeof answer === 'object'){
+    const summary = answer.summary || '';
+    const patterns = answer.patterns || [];
+    const red_flags = answer.red_flags || [];
+    const follow_up = answer.follow_up || [];
+    const note = answer.note || '';
+
+    contentHtml += `<p>${escapeHtml(summary)}</p>`;
+    if(patterns.length){
+      contentHtml += `<div style="margin-top:8px"><strong>Observed patterns:</strong><ul>${patterns.map(p=>`<li>${escapeHtml(p)}</li>`).join('')}</ul></div>`;
+    }
+    if(red_flags.length){
+      contentHtml += `<div style="margin-top:8px;color:#b91c1c"><strong>Red flags (need urgent evaluation):</strong><ul>${red_flags.map(p=>`<li>${escapeHtml(p)}</li>`).join('')}</ul></div>`;
+    }
+    if(follow_up.length){
+      contentHtml += `<div style="margin-top:8px"><strong>Follow-up considerations:</strong><ul>${follow_up.map(p=>`<li>${escapeHtml(p)}</li>`).join('')}</ul></div>`;
+    }
+    if(note){
+      contentHtml += `<div style="margin-top:10px;color:#374151;font-size:13px">${escapeHtml(note)}</div>`;
+    }
+  } else {
+    contentHtml = `<p>${escapeHtml(String(answer || ''))}</p>`;
+  }
+
+  card.innerHTML = `
+  <div class="bot-row">
+    <div class="bot-avatar">🤖</div>
+    <div class="bot-content">
+      ${contentHtml}
+      <div class="divider"></div>
+      ${safe ? '<span class="safe-badge">✔ Safe</span>' : ''}
+      <div style="margin-top:10px">
+        <div style="font-weight:600;margin-bottom:8px;">Sources:</div>
+        <div class="sources">
+          ${sources.map(s => `<div class="source-tag">📄 ${escapeHtml(s)}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+  return card;
+}
+async function sendQuery(){
+  const input = document.getElementById('chatInput');
+  const question = input.value.trim();
+  if(!question) return;
+  input.value = "";
+
+  const patientId = localStorage.getItem("patient_id");
+  if (!patientId) {
+    alert("Please upload a patient record first");
+    return;
+  }
+
+  const ub = document.createElement('div');
+  ub.style.display="flex";
+  ub.style.justifyContent="flex-end";
+  ub.style.marginBottom="12px";
+  ub.innerHTML = `
+    <div style="background:#2563eb;color:white;padding:12px 18px;border-radius:14px;font-weight:600">
+      ${escapeHtml(question)}
+    </div>`;
+  chatArea.appendChild(ub);
+
+  const res = await fetch(`${API_BASE}/ai/ask`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({
+  question: question,
+  patient_id: patientId
+})
+
+  });
+
+  if(!res.ok){
+    console.error("Backend error");
+    return;
+  }
+
+  const data = await res.json();
+  chatArea.appendChild(
+    createBotCard(
+      data.answer,
+      data.sources || [],
+      data.safe === undefined ? true : !!data.safe
+    )
+  );
+
+  // update right-panel session info dynamically
+  updateSessionInfo(data.matches || [], data.patients_used || []);
+}
+
+function updateSessionInfo(matches, patients_used){
+  const topList = document.getElementById('topMatchesList');
+  const patientsList = document.getElementById('patientsUsedList');
+  const initSources = document.getElementById('initialSources');
+
+  // Top matches
+  topList.innerHTML = '';
+  if(matches && matches.length){
+    matches.forEach(m => {
+      const p = document.createElement('p');
+      p.textContent = `• ${m.source} — ${m.score}%`;
+      topList.appendChild(p);
+    });
+  } else {
+    topList.innerHTML = '<p style="color:var(--muted)">No matched vectors for this query yet.</p>';
+  }
+
+  // Patients used
+  patientsList.innerHTML = '';
+  if(patients_used && patients_used.length){
+    patients_used.forEach(pat => {
+      const el = document.createElement('p');
+      el.textContent = `${pat} • Active`;
+      patientsList.appendChild(el);
+
+      // also add to initial sources area if empty
+      if(initSources && !initSources.querySelector(`[data-src="${pat}"]`)){
+        const tag = document.createElement('div');
+        tag.className = 'source-tag';
+        tag.setAttribute('data-src', pat);
+        tag.textContent = `📄 ${pat}`;
+        initSources.appendChild(tag);
+      }
+    });
+  } else {
+    patientsList.innerHTML = '<p style="color:var(--muted)">No patient history used for this session yet.</p>';
+  }
+}
+
+function getAuthHeaders() {
+  const token = localStorage.getItem("access_token");
+
+  return {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`
+  };
+}
+
+
+
+function onLogout(){
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href = "index.html";
+}
+
+</script>

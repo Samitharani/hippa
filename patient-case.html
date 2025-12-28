@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+  <head> 
+  <meta charset="utf-8" /> <meta name="viewport" content="width=device-width,initial-scale=1" /> <title>MedAI — Patient Case</title> <!-- Inter font --> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet"> <!-- Font Awesome --> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> <!-- Chart.js --> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+  <style> :root{ --bg:#f6f9fc; --card:#ffffff; --muted:#6b7280; --border:#e6eef7; --accent:#2563eb; --success:#10b981; --danger:#ef4444; --radius:12px; --soft: 0 6px 18px rgba(18,38,63,0.04); --sidebar:260px; --gutter:24px; } *{box-sizing:border-box} html,body{height:100%} body{ margin:0; font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:var(--bg); color:#0f172a; -webkit-font-smoothing:antialiased; } 
+/* Main two-column layout */
+
+
+
+ .section-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; /* FORCE full width */ width: 100%; max-width: 100% !important; /* Reduce side padding */ margin: 0; padding-right: 0; } /* Make each card stretch */ .card { width: 100%; box-sizing: border-box; } /* layout */ .app{display:flex;min-height:100vh} .sidebar{ width:var(--sidebar); background:linear-gradient(180deg,#fbfdff,#f7fbff); border-right:1px solid var(--border); padding:22px; display:flex;flex-direction:column;gap:18px;box-shadow:2px 0 12px rgba(20,36,61,0.02); }
+  .brand{display:flex;gap:12px;align-items:center}
+  .brand-title{font-weight:700;line-height:1}
+  .brand-icon{width:44px;height:44;border-radius:10px;background:#eef6ff;color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px}
+  .nav-item {
+  text-decoration: none !important;
+}
+
+.nav-item span {
+  text-decoration: none !important;
+}
+
+.nav-item i {
+  text-decoration: none !important;
+}
+
+
+   .nav{display:flex;flex-direction:column;gap:8px;margin-top:6px} .nav-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;color:#0f172a;cursor:pointer;font-weight:600} .nav-item.active{background:#eef6ff;color:var(--accent)} .sidebar-bottom{margin-top:auto} .logout{background:#fff;border:1px solid #e6eef7;color:var(--accent);padding:8px;border-radius:8px;cursor:pointer;font-weight:700;text-align:left}
+    /* main area uses full remaining width */ .main{flex:1;overflow:auto;padding:18px 22px} 
+    /* container uses full width (no centered boxed layout) */ .container{width:100%;display:flex;flex-direction:column;gap:18px;max-width:none} 
+    /* header pills */ .topbar{display:flex;gap:12px;align-items:center} .pill{display:inline-block;padding:6px 12px;border-radius:999px;background:#f8fafc;color:#334155;border:1px solid #eef2ff;font-size:13px}
+     .pill.success{background:#ecfdf5;color:var(--success);border:1px solid rgba(16,185,129,0.12)}
+      .page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-top:6px} 
+      .page-head h1{margin:6px 0 4px 0;font-size:24px} .subtitle{margin:0;color:var(--muted);font-size:14px} /* top layout with two columns -- BUT chart below will span both columns */ .grid-top{ display:grid; grid-template-columns: 1fr; /* only ONE full-width column */ gap:20px; margin-top:18px; align-items:start; } .card{background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--border);box-shadow:var(--soft)} /* patient summary */ .summary{display:flex;gap:16px;align-items:center} /* timeline + meds layout */ .timeline{display:flex;gap:12px} .timeline .event{display:flex;gap:10px;align-items:flex-start} .meds .med-item{display:flex;justify-content:space-between;gap:12px;padding:10px;border-radius:8px;background:#fbfdff;margin-bottom:8px;border:1px solid #eef6ff} /* analytics & prediction */ .analytics{display:grid;grid-template-columns:1fr 360px;gap:16px;margin-top:16px} .gauge-card{padding:14px;border-radius:10px;background:#fff7f6;border:1px solid #fff0f0} /* Full-width chart row that spans both columns */ .chart-row{grid-column: 1 / -1; width:calc(100% + 0px); /* spans the full main area */ } .chart-full{background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);box-shadow:var(--soft);display:flex;flex-direction:column} .chart-wrap{height:320px;width:100%} /* small vitals */ .vitals-row{display:flex;gap:12px;margin-top:12px} .vital{flex:1;padding:14px;border-radius:10px;background:#fbfdff;border:1px solid #eef6ff} .footer{margin-top:18px;padding:12px;border-radius:8px;background:linear-gradient(180deg,#0f172a,#0b1220);color:#fff;text-align:center;font-size:13px} /* responsive */ @media (max-width:1200px){ .grid-top{grid-template-columns:1fr} .analytics{grid-template-columns:1fr} .chart-wrap{height:260px} } @media (max-width:700px){ .sidebar{display:none} .main{padding:12px} }
+      .sidebar-bottom { margin-top: auto; padding-top: 20px; }
+
+.logout {
+  background: #fff;
+  border: 1px solid #eef2ff;
+  color: var(--accent);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  width: 100%;
+  text-align: left;
+}
+      </style>
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   <script src="js/api.js"></script>
+<script>
+  /* ================================
+   PATIENT CASE – REAL DATA ONLY
+   UI STRICTLY UNCHANGED
+================================ */
+
+let CURRENT_PATIENT = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadLatestPatient();
+  setInterval(loadLatestPatient, 10000); // auto refresh
+});
+
+async function loadLatestPatient() {
+  try {
+    const res = await fetch(`${API_BASE}/api/patients/latest`, {
+      headers: getAuthHeaders()
+    });
+
+    if (!res.ok) return;
+
+    const p = await res.json();
+    CURRENT_PATIENT = p;
+
+    renderHeader(p);
+    renderSummary(p);
+    renderTimeline(p);
+    renderMedications(p);
+
+  } catch (err) {
+    console.error("Patient load error", err);
+  }
+
+  // show AI Analysis button based on role
+  setupAIAnalysis();
+}
+
+function setupAIAnalysis(){
+  try{
+    const role = localStorage.getItem("role");
+    const btn = document.getElementById("ai-analysis-btn");
+    if(!btn) return;
+    if(role === "doctor" || role === "nurse"){
+      btn.style.display = "inline-block";
+      btn.addEventListener("click", runAIAnalysis);
+    } else {
+      btn.style.display = "none";
+    }
+  }catch(e){console.error(e)}
+}
+
+function escapeHtml(s){
+  if(!s) return "";
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+async function runAIAnalysis(){
+  if(!CURRENT_PATIENT){ alert("No patient loaded"); return; }
+  const btn = document.getElementById("ai-analysis-btn");
+  btn.disabled = true;
+  const prev = btn.innerHTML;
+  btn.innerText = "Analyzing...";
+
+  try{
+    const res = await fetch(`${API_BASE}/ai/analysis`, {
+      method: "POST",
+      headers: Object.assign({"Content-Type":"application/json"}, getAuthHeaders()),
+      body: JSON.stringify({ patient_id: CURRENT_PATIENT.patient_id })
+    });
+
+    if(!res.ok){
+      const err = await res.json().catch(()=>({detail:res.status}));
+      alert('Analysis failed: ' + (err.detail || res.status));
+      return;
+    }
+
+    const data = await res.json();
+    renderAnalysis(data);
+
+  }catch(err){
+    console.error(err);
+    alert('Analysis failed');
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = prev;
+  }
+}
+
+function renderAnalysis(obj){
+  const container = document.getElementById('ai-analysis-content');
+  const card = document.getElementById('ai-analysis');
+  if(!obj) return;
+  // Build HTML with headings and bullets, matching theme
+  let html = '';
+  html += `<div style="font-weight:700;margin-bottom:6px">Clinical risk explanation</div><div style="color:#0f172a;margin-bottom:10px">${escapeHtml(obj.clinical_risk_explanation || '')}</div>`;
+
+  html += `<div style="font-weight:700;margin-bottom:6px">Possible conditions</div>`;
+  if(obj.possible_conditions && obj.possible_conditions.length){
+    html += '<ul style="margin-top:6px;margin-bottom:10px">' + obj.possible_conditions.map(x=>`<li>${escapeHtml(x)}</li>`).join('') + '</ul>';
+  } else {
+    html += '<div style="color:var(--muted);margin-bottom:10px">None identified</div>';
+  }
+
+  html += `<div style="font-weight:700;margin-bottom:6px">Red flags</div>`;
+  html += '<ul style="margin-top:6px;margin-bottom:10px">' + (obj.red_flags && obj.red_flags.length ? obj.red_flags.map(x=>`<li>${escapeHtml(x)}</li>`).join('') : '<li>No immediate red flags detected</li>') + '</ul>';
+
+  html += `<div style="font-weight:700;margin-bottom:6px">General recommendations</div>`;
+  if(obj.general_recommendations && obj.general_recommendations.length){
+    html += '<ul style="margin-top:6px">' + obj.general_recommendations.map(x=>`<li>${escapeHtml(x)}</li>`).join('') + '</ul>';
+  }
+
+  container.innerHTML = html;
+  card.style.display = 'block';
+  card.scrollIntoView({behavior:'smooth'});
+}
+
+
+/* ---------- HEADER ---------- */
+function renderHeader(p) {
+  document.querySelector(".subtitle").innerText =
+    `Clinical Case • ${p.case_id || p.patient_id}`;
+}
+
+/* ---------- SUMMARY ---------- */
+function renderSummary(p) {
+  document.getElementById("patient-summary-line").innerHTML = `
+    Case ID: <b>${p.case_id}</b> •
+  
+    Risk Level: <b>${p.risk_level || "--"}</b>
+  `;
+
+  const kv = document.querySelectorAll(".kv");
+  kv[1].lastElementChild.innerText =
+    new Date(p.created_at).toLocaleDateString();
+
+  kv[3].lastElementChild.innerText = p.risk_level || "—";
+
+  // Past medical history — show in the first alert box
+  
+}
+
+/* ---------- TIMELINE ---------- */
+function renderTimeline(p) {
+  const timeline = document.getElementById("timeline");
+  timeline.innerHTML = "";
+
+  const events = p.timeline?.length
+    ? p.timeline
+    : [{
+        date: new Date(p.created_at).toLocaleDateString(),
+        event: "Clinical record uploaded & de-identified"
+      }];
+
+  events.forEach(ev => {
+    timeline.innerHTML += `
+      <div class="event">
+        <div style="width:12px;height:12px;border-radius:50%;background:#60a5fa"></div>
+        <div>
+          <div style="font-weight:700">${ev.date}</div>
+          <div style="color:#6b7280">${ev.event}</div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+/* ---------- MEDICATIONS ---------- */
+function renderMedications(p) {
+  const box = document.getElementById("medications-list");
+  box.innerHTML = "";
+
+  if (!p.medications || !p.medications.length) {
+    box.innerHTML =
+      `<div style="color:#6b7280">No active medications</div>`;
+    return;
+  }
+
+  p.medications.forEach(m => {
+    box.innerHTML += `
+      <div class="med-item">
+        <div>
+          <div style="font-weight:700">${m.name}</div>
+          <div style="color:#6b7280">
+            ${m.dose} • ${m.frequency}
+          </div>
+        </div>
+        <span style="
+          padding:6px 10px;
+          border-radius:999px;
+          background:#ecfdf5;
+          color:#065f46;
+          border:1px solid #d1fae5;
+          font-weight:700">
+          active
+        </span>
+      </div>
+    `;
+  });
+}
+</script>
+  </head>
+
+  <body>
+    <div class="app"> 
+   <!-- SIDEBAR -->
+  <aside class="sidebar" aria-label="Sidebar">
+    <div class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-shield-heart"></i></div>
+      <div>
+        <div class="brand-title">MedAI</div>
+        <div class="brand-sub">Secure</div>
+      </div>
+    </div>
+
+     <nav class="nav" aria-label="Main navigation">
+  <a href="doctor.html" class="nav-item">
+    <i class="fa-solid fa-house"></i>
+    <span>Dashboard</span>
+  </a>
+
+  <a href="upload.html" class="nav-item">
+    <i class="fa-solid fa-file-arrow-up"></i>
+    <span>Upload Record</span>
+  </a>
+
+  <a href="ai-chatbot.html" class="nav-item">
+    <i class="fa-solid fa-robot"></i>
+    <span>AI Chatbot</span>
+  </a>
+
+  <a href="patient-case.html" class="nav-item">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Patient Cases</span>
+  </a>
+</nav>
+
+    <div class="sidebar-bottom">
+      <div class="who">Doctor <div class="muted" style="font-weight:600">Logged in</div></div>
+      <button class="logout" onclick="onLogout()"><i class="fa-solid fa-right-from-bracket"></i>&nbsp; Logout</button>
+    </div>
+  </aside>
+
+     <!-- Main -->  <main class="main">
+    <header class="topbar" role="banner">
+      <div class="left-pill">
+        <span class="pill">HIPAA-Compliant System</span>
+        <span class="pill">End-to-End Encrypted</span>
+      </div>
+
+      <div class="right-pill">
+        <span class="pill success"><i class="fa-solid fa-circle-check" style="margin-right:6px"></i> System Status: Secure</span>
+      </div>
+    </header>
+         <div class="page-head"> <div> <h1>Patient Case View</h1> <div class="subtitle">Comprehensive patient overview with AI-powered insights</div> </div> <div> <button id="ai-analysis-btn" class="pill" style="background:#0b1220;color:#fff;border:none;margin-left:8px;display:none"><i class="fa-solid fa-microscope"></i> AI Analysis</button> </div> </div> 
+        <!-- Top grid: left column (summary + timeline) and right column (labs) --> <div class="grid-top"> 
+          <!-- left column --> <div class="left-col" style="display:flex;flex-direction:column;gap:14px"> 
+            <!-- Patient summary card --> <div class="card summary"> <div style="width:72px;height:72px;border-radius:12px;background:#eef6ff;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:22px"><i class="fa-solid fa-user-doctor"></i></div> <div style="flex:1"> <div style="font-weight:700">Patient Summary</div><div id="patient-summary-line" style="color:var(--muted);font-size:13px">
+ ID: <b></b> • Gender: <b></b></div> <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap"> <div class="kv"><div style="font-size:12px;color:var(--muted)"></div><div style="font-weight:700"></div></div> <div class="kv"><div style="font-size:12px;color:var(--muted)">Last Visit</div><div style="font-weight:700"></div></div> <div class="kv"><div style="font-size:12px;color:var(--muted)"></div><div style="font-weight:700"></div></div> <div class="kv"><div style="font-size:12px;color:var(--muted)">Risk Level</div><div style="padding:6px 10px;border-radius:999px;background:#fff7ed;color:#92400e;font-weight:700"></div></div> </div> <div class="alerts" style="margin-top:12px"> <div class="alert err"> <div style="font-weight:700"></div> <div style="color:var(--muted);font-size:13px"></div> </div> <div class="alert warn"> <div style="font-weight:700"></div> <div style="color:var(--muted);font-size:13px"><div> </div> </div> </div> </div> 
+             <!-- Timeline and meds --> 
+
+            <!-- AI Analysis Card (hidden until used) -->
+            <div id="ai-analysis" class="card" style="display:none;margin-top:12px">
+              <div style="font-weight:700">AI Analysis</div>
+              <div id="ai-analysis-content" style="margin-top:8px;color:var(--muted)"></div>
+            </div>
+
+            <div style="display:flex;gap:12px"> <div class="card" style="flex:1"> <div style="font-weight:700">Disease Progression Timeline</div> <div style="color:var(--muted);font-size:13px;margin-top:6px">Key events and milestones</div><div style="margin-top:12px" id="med-list">
+  <div class="timeline" id="timeline" style="display:flex;flex-direction:column;gap:12px">
+
+ <div class="event"><div style="width:12px;height:12px;border-radius:50%;background:#93c5fd;margin-top:6px"></div><div id="medications-list" style="margin-top:12px">
+<div><div style="font-weight:700"></div><div style="color:var(--muted)"></div></div><div><span style="padding:6px 10px;border-radius:999px;background:#ecfdf5;border:1px solid #d1fae5;font-weight:700"></span></div></div> <div id="medications-list"></div>
+<div><div style="font-weight:700"></div><div style="color:var(--muted)"></div></div><div><span style="padding:6px 10px;border-radius:999px;background:#ecfdf5;border:1px solid #d1fae5;font-weight:700"></span></div></div> <div id="medications-list"></div>
+<div><div style="font-weight:700></div><div style="color:var(--muted)"></div></div><div><span style="padding:6px 10px;border-radius:999px;background:#ecfdf5;border:1px solid #d1fae5;font-weight:700"></span></div></div> </div> </div> </div>
+                     <!-- end grid-top --> <div class="footer">🔒 All patient data encrypted using AES-256-GCM and processed in-memory only • HIPAA & SOC 2 Compliant</div> </div> <!-- container --> </main> </body> <script>
+
+      // single onLogout implementation
+      function onLogout(){
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = "index.html";
+      }
+    </script>
+</body>
+</html>
